@@ -18,4 +18,4 @@
 
 検証結果には適用条件を付けます。零曲率条件と運動方程式の同値性、スペクトルパラメータの本質性、保存量のPoisson可換性は別々に記録します。探索の失敗から模型の非可積分性を結論しません。
 
-文書の数式はインラインを`$...$`、独立した数式を`$$...$$`で記述します。[GitHubの数式記法](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions)に従い、式番号は数式ブロック内に残します。
+文書のインライン数式は ``$`...`$`` とし、前後に空白を入れます。独立した数式は `$$...$$` で記述します。[GitHubの数式記法](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions)に従い、式番号は数式ブロック内に `\qquad \text{(1)}` のように付けます。`\tag{...}` を含む数式がGitHubの表示で縦に崩れるため、この文書では使用しません。
