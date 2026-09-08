@@ -1,0 +1,64 @@
+# Proposed application configuration; no loader has been implemented yet.
+# The loader resolves *_env fields before calling LiteLLM.
+# Only the selected profile is loaded; unused profiles require no credentials.
+schema_version = 1
+active_profile = "mock"
+
+[profiles.mock]
+backend = "mock"
+network = false
+
+[profiles.cloud_openai]
+backend = "litellm"
+model = "openai/gpt-6-astra"
+api_key_env = "OPENAI_API_KEY"
+tool_mode = "native"
+require_strict_tools = true
+drop_unsupported_params = false
+automatic_fallback = false
+
+[profiles.cloud_openai.parameters]
+reasoning_effort = "high"
+
+[profiles.cloud_openai.pricing]
+verified_on = "2026-09-08"
+currency = "USD"
+input_per_million = 10.0
+output_per_million = 50.0
+source = "https://developers.openai.com/api/docs/models/gpt-6-astra"
+# Reservation must account for cache writes, service tier, and input length.
+# These base rates alone do not define every billing condition.
+
+[profiles.cloud_anthropic]
+backend = "litellm"
+model = "anthropic/claude-opus-5"
+api_key_env = "ANTHROPIC_API_KEY"
+tool_mode = "native"
+require_strict_tools = false
+drop_unsupported_params = false
+automatic_fallback = false
+# Provider defaults are used until parameter mapping is tested.
+# Record the resolved thinking/effort configuration in the run manifest.
+
+[profiles.cloud_anthropic.pricing]
+verified_on = "2026-09-08"
+currency = "USD"
+input_per_million = 5.0
+output_per_million = 25.0
+source = "https://platform.claude.com/docs/en/models/opus-5/overview"
+
+[profiles.local]
+backend = "litellm"
+provider_prefix = "openai"
+# NLSM_LOCAL_MODEL must be an actual ID returned by the local /v1/models endpoint.
+# The loader constructs model = provider_prefix + "/" + that ID.
+model_env = "NLSM_LOCAL_MODEL"
+api_base = "http://localhost:1234/v1"
+api_key_env = "NLSM_LOCAL_API_KEY"
+tool_mode = "probe"
+require_strict_tools = false
+drop_unsupported_params = false
+automatic_fallback = false
+reference_weights = "Qwen/Qwen3-4B"
+# API key is optional if the local server has authentication disabled.
+# Start with a 4-bit quantization and a short context; measure actual memory use.

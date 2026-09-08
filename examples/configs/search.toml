@@ -1,0 +1,50 @@
+# Proposed application configuration; these commands and loaders are not implemented.
+schema_version = 1
+mode = "evaluation"
+
+[agent]
+framework = "langgraph"
+llm_config = "llm.toml" # Resolved relative to this file.
+checkpoint_backend = "sqlite"
+storage_root = "runs" # Resolved relative to the invocation working directory.
+max_concurrent_llm_calls = 1
+max_concurrent_solver_jobs = 1
+
+[budget]
+max_llm_requests = 20 # Includes repairs and retries.
+max_candidates = 10
+max_solver_jobs = 40
+max_wall_seconds = 3600
+max_api_cost_usd = 10.0
+max_input_tokens_total = 160000
+max_output_tokens_total = 64000 # Includes billed reasoning tokens when applicable.
+max_input_tokens_per_request = 16000
+max_output_tokens_per_request = 8192
+max_schema_repairs = 1
+automatic_transport_retries = 0
+
+[solver]
+backend = "sympy"
+timeout_seconds = 120
+memory_limit_mib = 2048
+exact_verification_required = true
+
+[search_space]
+connection_derivative_order = 1
+connection_linear_in_derivatives = true
+spectral_function_class = "rational"
+max_numerator_degree = 2
+max_denominator_degree = 2
+
+[verification]
+require_forward_identity = true
+require_equation_recovery = true
+record_exceptional_parameter_loci = true
+spectral_essentiality = "report_separately"
+hamiltonian_integrability = "not_checked"
+
+[evaluation]
+reference_access = "disabled"
+provider_fallback = false
+log_human_interventions = true
+holdout_grouping = "model_family_and_equivalence_class"
