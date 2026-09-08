@@ -14,6 +14,7 @@
 | --- | --- | --- |
 | 言語・依存管理 | Python 3.12、uv | パッケージ、固定された依存バージョン、実験環境の記録 |
 | 物理計算 | SymPy | 厳密係数、Lie代数成分、曲率、係数方程式、代入検証 |
+| 機械学習による候補探索 | PyTorch（任意依存） | Lax候補の係数の最適化。ニューラルネットワークによる係数関数の学習も接続する |
 | 入出力検査 | Pydantic 2、JSON Schema | 型、許容値、式の構文、返却データの検査 |
 | エージェント実行 | LangGraphの`StateGraph` | 分岐、反復、チェックポイント、中断再開 |
 | LLM接続 | LiteLLM Python SDK | OpenAI、Anthropic、ローカル推論を共通のインターフェースで呼ぶ |
@@ -78,8 +79,9 @@ tool-call ID、返却メッセージ、会話継続に必要なプロバイダ�
 | 配置 | 責務 | 依存の制約 |
 | --- | --- | --- |
 | `src/nlsm_lax/schemas/` | 入力、式、操作、計算結果の型 | Pydanticと標準ライブラリ |
-| `src/nlsm_lax/core/` | 模型、変分、Lie代数、曲率、検証 | LLM、LangGraph、MCPをimportしない |
+| `src/nlsm_lax/core/` | 模型、変分、Lie代数、曲率、検証 | LLM、LangGraph、MCP、PyTorchをimportしない |
 | `src/nlsm_lax/solvers/` | 係数方程式の解法、数値候補からの厳密係数の復元 | `core`で最終候補を再検証 |
+| `src/nlsm_lax/solvers/ml/` | 数値最適化、ニューラルネットワークによる候補生成 | PyTorchはこの任意モジュール内で読み込む。検証結果を書き換えない |
 | `src/nlsm_lax/tools/` | 登録済み関数の公開、ジョブへの変換 | 同じ関数をPythonとMCPから呼ぶ |
 | `src/nlsm_lax/agent/` | 状態遷移、文脈の構築、終了条件 | LangGraphはこの層に置く |
 | `src/nlsm_lax/backends/llm/` | LiteLLM、mock、replay | LiteLLMはエージェント用の任意依存 |
@@ -98,7 +100,12 @@ SymPyとWolframの間に汎用の記号計算言語は作らない。まず`solv
 flowchart TD
     I[模型の検査と運動方程式の導出] --> P[LLMによる操作選択]
     P --> V[操作と予算の検査]
-    V --> C[記号計算ジョブ]
+    V --> S{候補の探索方法}
+    S -->|記号計算| C[係数方程式の求解]
+    S -->|機械学習| N[数値候補の生成]
+    N --> E[厳密な式の復元]
+    E -->|式を復元| Q
+    E -->|未解決| R
     C --> Q[候補の独立検証]
     Q --> R{結果と残予算}
     R -->|候補を修正| P
@@ -108,7 +115,9 @@ flowchart TD
     V -->|不正な操作| P
 ```
 
-LLMの操作は`propose_ansatz`、`revise_ansatz`、`restrict_parameters`、`inspect_artifact`、`stop`に限定する。候補を提出すると、実行管理が制約の構築・求解・検証を順に行う。LLMには検証を省略する操作や、合格状態を書き込む操作を与えない。式の次数や項数、補助Lie代数、分母の形などは宣言された探索範囲内で変更できる。
+LLMの操作は`propose_ansatz`、`revise_ansatz`、`search_candidates`、`restrict_parameters`、`inspect_artifact`、`stop`に限定する。ansatzの提出・修正時には探索方法を`symbolic`または`ml`から選び、実行管理が制約の構築・候補探索・独立検証を進める。既定は`symbolic`とする。`search_candidates`は、登録済みのansatzについて方法や初期値を変えて再探索する操作である。`ml`は設定で有効にした対応実装があるときだけ選択可能にする。
+
+機械学習を選んだ場合は、数値候補から厳密な式を復元してから検証器へ渡す。式を復元できなければ数値候補を保存し、未解決として次の操作へ進む。LLMには検証を省略する操作や、合格状態を書き込む操作を与えない。式の次数や項数、補助Lie代数、分母の形などは宣言された探索範囲内で変更できる。
 
 `restrict_parameters`は元の模型を上書きせず、条件を追加した子実行を作る。兄弟の実行の条件や結果を混同しない。条件を外した一般模型への結論は自動的に拡張しない。
 
@@ -134,6 +143,8 @@ LLMの操作は`propose_ansatz`、`revise_ansatz`、`restrict_parameters`、`ins
 | `derive_equations` | 模型と定義域 | 運動方程式、恒等式、使用した独立な成分 |
 | `build_lax_constraints` | 模型、`AnsatzSpec` | 曲率と、候補係数が満たす代数方程式 |
 | `solve_constraints` | 制約、求解範囲、資源上限 | 候補解、除外条件、解集合を尽くしたかどうか |
+| `search_lax_candidates_ml` | 模型、`AnsatzSpec`、学習対象・損失・初期値・資源上限 | 未検証の数値候補、学習履歴、別サンプルでの残差、数値的なrankの診断 |
+| `reconstruct_exact_candidate` | 数値候補、許容する式のクラス、復元の設定 | 厳密な式で表した候補、または復元未完了。成立判定は後続の検証器が行う |
 | `verify_curvature` | 候補、模型 | 曲率を再構築した結果、前向きの恒等式 |
 | `recover_equations` | 曲率の係数、方程式 | 回収式、rank、非零小行列式、適用条件 |
 | `check_spectral_parameter` | 候補、許した変換のクラス | 依存性、除去変換の有無、未確認範囲 |
@@ -141,9 +152,9 @@ LLMの操作は`propose_ansatz`、`revise_ansatz`、`restrict_parameters`、`ins
 
 関数は同じ入力形式の通常のPython呼出しでも利用できる。長い計算はジョブとして登録し、`get_job`と`cancel_job`で状態を取得・停止する。キャンセルや時間切れは数理的な不成立と区別する。
 
-共通の返却型`ToolResult`には、`execution_status`、`claim_status`、`assumptions_ref`、`artifact_refs`、`diagnostics`、実行時間、バックエンドのバージョンを含める。`execution_status`は`completed`、`timeout`、`error`、`unsupported`、`cancelled`から選ぶ。`claim_status`は`established`、`refuted`、`unresolved`、`not_applicable`から選ぶ。たとえば候補の曲率残差が非零であることは、その候補を反証するが模型の非可積分性を意味しない。
+共通の返却型`ToolResult`には、`execution_status`、`claim_status`、`assumptions_ref`、`artifact_refs`、`candidate_refs`、`diagnostics`、実行時間、バックエンドのバージョンを含める。候補を返さない操作では`candidate_refs`は空の配列とする。`execution_status`は`completed`、`timeout`、`error`、`unsupported`、`cancelled`から選ぶ。`claim_status`は`established`、`refuted`、`unresolved`、`not_applicable`から選ぶ。たとえば候補の曲率残差が非零であることは、その候補を反証するが模型の非可積分性を意味しない。
 
-数値探索器は後から`solve_constraints`の候補生成部分へ接続する。数値で小さい残差が出た場合は`candidate`を返し、厳密係数の復元と記号的な代入検証が終わるまで確認済みの結果にしない。
+`search_lax_candidates_ml`は、記号的な`solve_constraints`と並ぶ候補生成ツールとして設計に含める。返却時の`claim_status`は`unresolved`とし、候補データは`candidate_refs`に記録する。厳密な式の復元後も、`verify_curvature`、`recover_equations`、`check_spectral_parameter`を同じ条件で実行する。学習対象と損失の要件は[機械学習による候補探索](ml-search.ja.md)で定義する。
 
 ## 7. 式と探索記録
 
@@ -159,6 +170,8 @@ LLMの操作は`propose_ansatz`、`revise_ansatz`、`restrict_parameters`、`ins
 
 初期のクラウド設定案は、LLMリクエスト20回、候補10件、数理計算ジョブ40件、実行全体1時間を上限とする。LLMの修正要求と通信再試行も回数・費用に含める。単一ジョブは120秒、メモリは2 GiBを初期上限とし、超過した計算は別プロセスを終了する。
 
+機械学習ジョブには`ml_search`の時間・メモリ上限を使い、記号計算用の上限と分ける。学習の再試行、式の復元、最終検証も総予算に含める。ローカルLLMとGPUを共有する場合は同時実行を避け、両方の重みを載せたまま学習を開始しない。学習用のcheckpointには重み、optimizerの状態、乱数の状態、学習ステップを保存し、LangGraphの再開記録から参照する。
+
 クラウドの予算案は1実行10米ドルである。これは実際の消費額の予測ではない。API呼出し前に、入力と出力上限から保守的な費用を予約し、結果で精算する。価格の確認日と料金区分を設定に保持し、価格や利用量が不明な場合は課金を伴う次の呼出しを停止する。タイムアウトしたリクエストの予約を勝手に返金扱いにせず、確認待ちにする。外部API側で既に発生した課金をクライアントから取り消すことはできない。
 
 ジョブには、入力ハッシュ、ツール名とバージョン、定義域、資源上限、seedから作るキーを付ける。完了結果は一時ファイルからのatomic renameとデータベースのトランザクションで登録する。プロセスが終了して再開した場合、完了済み結果を再利用し、実行中だったジョブは生存確認後に再登録する。時間切れは同じ設定では再計算しないが、資源上限を変えた新しいジョブは許す。
@@ -173,4 +186,4 @@ LangGraphのノードが再実行される可能性を前提とする。物理�
 
 normal variational equation、Kovacic algorithm、散乱振幅、数値的なカオスの診断は拡張用のインターフェースに留める。normal variational equationは、ある解の近傍の変分方程式から解に沿う方向を除いた方程式である。初期リリースで一般的な非可積分性判定やHamiltonian構造の自動証明を提供するとは約束しない。
 
-最初に機械学習で更新する対象はLLMの重みではなく、探索に使うツールと評価問題である。十分な検証済み操作履歴が得られた後で、候補修正やツール選択を小型モデルへ追加学習させる実験を別の段階として行う。
+機械学習による候補生成ツールは、検証器の整備後、LLM接続の前からPythonで利用できる段階を設ける。最初は有限個のansatz係数の数値最適化を実装し、ニューラルネットワークによる係数関数の学習を同じ契約へ追加する。十分な検証済み操作履歴が得られた後で、候補修正やツール選択を小型LLMへ追加学習させる実験を別の段階として行う。

@@ -29,6 +29,25 @@ timeout_seconds = 120
 memory_limit_mib = 2048
 exact_verification_required = true
 
+[ml_search]
+# Optional candidate-generation tool; independent of LLM fine-tuning.
+# Disabled for the initial symbolic baseline. Enabling requires the optional implementation.
+enabled = false
+backend = "torch"
+parameterization = "direct_coefficients" # Numerical optimization baseline; not a neural network.
+device = "cpu" # Select a GPU explicitly; do not share resident memory with a local LLM.
+dtype = "float64"
+seed = 0
+max_steps_per_restart = 2000
+max_restarts = 4
+max_returned_candidates = 3
+timeout_seconds = 600 # Entire job, including all restarts; capped by remaining run time.
+memory_limit_mib = 4096
+gpu_memory_limit_mib = 8192 # Used only when device selects a GPU.
+train_model_parameters = false # Physical couplings are fixed in the first implementation.
+# Search, restarts, reconstruction and verification all count toward the run budget.
+# Loss, sampling domain and allowed exact expressions are supplied by the search request.
+
 [search_space]
 connection_derivative_order = 1
 connection_linear_in_derivatives = true
