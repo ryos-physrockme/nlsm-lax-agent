@@ -1,66 +1,24 @@
 # Proposed application configuration; these commands and loaders are not implemented.
 schema_version = 1
 mode = "evaluation"
+tools_config = "tools.toml" # Resolved relative to this file; shared with CLI and MCP.
 
 [agent]
 framework = "langgraph"
 llm_config = "llm.toml" # Resolved relative to this file.
+allowed_llm_profiles = ["mock", "gemini_free", "local"]
 checkpoint_backend = "sqlite"
-storage_root = "runs" # Resolved relative to the invocation working directory.
 max_concurrent_llm_calls = 1
-max_concurrent_solver_jobs = 1
 
 [budget]
 max_llm_requests = 20 # Includes repairs and retries.
-max_candidates = 10
-max_solver_jobs = 40
-max_wall_seconds = 3600
-max_api_cost_usd = 10.0
+max_api_cost_usd = 0.0 # Development uses a Free Tier Gemini project or local inference.
 max_input_tokens_total = 160000
 max_output_tokens_total = 64000 # Includes billed reasoning tokens when applicable.
 max_input_tokens_per_request = 16000
 max_output_tokens_per_request = 8192
 max_schema_repairs = 1
 automatic_transport_retries = 0
-
-[solver]
-backend = "sympy"
-timeout_seconds = 120
-memory_limit_mib = 2048
-exact_verification_required = true
-
-[ml_search]
-# Optional candidate-generation tool; independent of LLM fine-tuning.
-# Disabled for the initial symbolic baseline. Enabling requires the optional implementation.
-enabled = false
-backend = "torch"
-parameterization = "direct_coefficients" # Numerical optimization baseline; not a neural network.
-device = "cpu" # Select a GPU explicitly; do not share resident memory with a local LLM.
-dtype = "float64"
-seed = 0
-max_steps_per_restart = 2000
-max_restarts = 4
-max_returned_candidates = 3
-timeout_seconds = 600 # Entire job, including all restarts; capped by remaining run time.
-memory_limit_mib = 4096
-gpu_memory_limit_mib = 8192 # Used only when device selects a GPU.
-train_model_parameters = false # Physical couplings are fixed in the first implementation.
-# Search, restarts, reconstruction and verification all count toward the run budget.
-# Loss, sampling domain and allowed exact expressions are supplied by the search request.
-
-[search_space]
-connection_derivative_order = 1
-connection_linear_in_derivatives = true
-spectral_function_class = "rational"
-max_numerator_degree = 2
-max_denominator_degree = 2
-
-[verification]
-require_forward_identity = true
-require_equation_recovery = true
-record_exceptional_parameter_loci = true
-spectral_essentiality = "report_separately"
-hamiltonian_integrability = "not_checked"
 
 [evaluation]
 reference_access = "disabled"

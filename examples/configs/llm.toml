@@ -8,6 +8,29 @@ active_profile = "mock"
 backend = "mock"
 network = false
 
+[profiles.gemini_free]
+backend = "litellm"
+model = "gemini/gemini-3.8-flash"
+api_key_env = "GEMINI_API_KEY"
+tool_mode = "native"
+require_strict_tools = false
+drop_unsupported_params = false
+automatic_fallback = false
+billing_tier = "free" # Application metadata; does not change Google's billing tier.
+# Use a project/API key that actually has Free Tier access for this model.
+# Preserve complete assistant messages, including provider-specific thought signatures.
+# Pause and save state on quota exhaustion; do not switch to a paid model.
+
+[profiles.gemini_free.pricing]
+verified_on = "2026-09-09"
+currency = "USD"
+input_per_million = 0.0
+output_per_million = 0.0
+source = "https://ai.google.dev/gemini-api/docs/pricing"
+# These rates apply only to the Free Tier and standard text/function-calling requests.
+# Do not infer the project's billing status from these configured rates.
+
+# Optional paid profiles; excluded by search.toml's development allowlist and zero budget.
 [profiles.cloud_openai]
 backend = "litellm"
 model = "openai/gpt-6-astra"

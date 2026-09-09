@@ -1,6 +1,6 @@
 # 非線形シグマ模型のLax接続探索エージェント：アーキテクチャ
 
-設計日：2026年9月8日。対象リポジトリ：`ryos-physrockme/nlsm-lax-agent`。
+設計日：2026年9月8日。更新日：2026年9月9日。対象リポジトリ：`ryos-physrockme/nlsm-lax-agent`。
 設計開始時のコミットは `8fbdc356965d0076355c477858207c4ca99704a3` で、内容はREADMEのみだった。
 本書のモジュール、インターフェース、設定項目は実装仕様案であり、実装済み機能を表さない。
 
@@ -8,7 +8,7 @@
 
 入力された2次元非線形シグマ模型について、Lax接続の候補を提案し、記号計算の結果を受けて候補を修正する。成果物は、候補の数式、成立する結合定数の条件、検証可能な計算記録、および未確認事項である。物理的な検証条件は[物理検証仕様](verification.ja.md)で定義する。
 
-初期リリースでは単一のLLMが次の操作を選択する。複数のLLMによる役割分担は導入しない。フレームワークによる状態管理と、物理計算の正しさを担う部分を分離する。
+組み込みエージェントの初期リリースでは単一のLLMが次の操作を選択する。複数のLLMによる役割分担は導入しない。フレームワークによる状態管理と、物理計算の正しさを担う部分を分離する。
 
 | 要素 | 採用案 | このプロジェクトでの役割 |
 | --- | --- | --- |
@@ -17,12 +17,12 @@
 | 機械学習による候補探索 | PyTorch（任意依存） | Lax候補の係数の最適化。ニューラルネットワークによる係数関数の学習も接続する |
 | 入出力検査 | Pydantic 2、JSON Schema | 型、許容値、式の構文、返却データの検査 |
 | エージェント実行 | LangGraphの`StateGraph` | 分岐、反復、チェックポイント、中断再開 |
-| LLM接続 | LiteLLM Python SDK | OpenAI、Anthropic、ローカル推論を共通のインターフェースで呼ぶ |
+| LLM接続 | LiteLLM Python SDK | 開発時はGeminiとローカル推論を呼ぶ。OpenAI・Anthropic等への切り替えも設定で扱う |
 | 履歴 | SQLite、JSON Lines、ファイル | ジョブ状態、操作履歴、大きな数式、検証記録 |
 | 利用方法 | Python、コマンドライン、MCP | 人間と既存のエージェントから同じ機能を利用 |
 | 追加の記号計算 | WolframScriptアダプター | 必要な計算だけを別プロセスで実行。任意依存 |
 
-LangGraphはチェックポイントによる再開を備え、開発時にはSQLiteを利用できる。この機能を、長時間の記号計算と探索履歴の管理に使う。[LangGraph公式資料](https://docs.langchain.com/oss/python/langgraph/persistence)
+LangGraphはチェックポイントによる再開を備え、開発時にはSQLiteを利用できる。この機能は組み込みエージェントの探索手順と会話の再開に使う。数理計算のジョブと検証記録は、第4節の共通ツールと保存層で管理する。[LangGraph公式資料](https://docs.langchain.com/oss/python/langgraph/persistence)
 
 ## 2. フレームワークの選定
 
@@ -43,12 +43,18 @@ LiteLLM Routerのfallbackや負荷分散は後から利用できる。ただし�
 
 ## 3. LLMバックエンド
 
+開発時のLLM接続はGemini APIの無料枠とローカル推論を対象とする。自動テストの既定は`mock`とし、有料APIへの接続を開発の前提にしない。強いモデルを利用できる外部エージェントは、第4節のMCPから物理ツールを直接利用する。
+
 | 用途 | 初期候補 | 接続 | 選定の意味 |
 | --- | --- | --- | --- |
 | 開発・自動テスト | `mock` / `replay` | 保存した応答を返す | APIキー不要で分岐と再開を検証する |
-| 最初の探索実験 | `openai/gpt-6-astra` | LiteLLMからOpenAIへ | 強いモデルを比較の基準に置き、まずツール側の不足を調べる |
-| 別プロバイダーとの比較 | `anthropic/claude-opus-5` | LiteLLMからAnthropicへ | 同じ入力・ツール・予算で検証済み成果の差を測る |
-| ローカルでの比較 | `Qwen/Qwen3-4B`を出発点とする | LiteLLMからLM StudioのOpenAI互換APIへ | 小型モデルの基準実験と、後の追加学習の比較対象 |
+| 開発・最初の探索実験 | Gemini API無料枠。設定例は`gemini/gemini-3.8-flash` | LiteLLMからGemini Developer APIへ | 利用可能な無料枠でツール選択と反復を試す |
+| ローカルでの開発・比較 | `Qwen/Qwen3-4B`を出発点とする | LiteLLMからLM StudioのOpenAI互換APIへ | APIの利用枠に依存しない開発と、小型モデルの基準実験 |
+| 任意の追加比較 | `openai/gpt-6-astra`、`anthropic/claude-opus-5` | 有料APIを使う設定を明示的に選ぶ場合だけLiteLLMから接続 | 開発の必須条件に含めない。外部エージェントからのMCP利用とは別の条件 |
+
+Geminiの接続には`gemini/`接頭辞と`GEMINI_API_KEY`を使う。[LiteLLMのGemini接続資料](https://docs.litellm.ai/docs/providers/gemini)と[Googleの料金表](https://ai.google.dev/gemini-api/docs/pricing)で設定例を確認した（2026年9月9日）。実際に使うプロジェクトでの無料枠の利用可否と接続は未検証である。無料枠を使うプロジェクトのAPIキーを設定し、モデルと料金区分を記録する。設定ファイル上の`billing_tier`や費用上限は、Google側の課金設定を変更するものではない。
+
+無料枠の利用上限に達した場合は状態を保存して一時停止し、有料プロファイルへ自動で切り替えない。利用上限はモデルとプロジェクトの状況に依存するため、固定の一日当たり回数を設計上の保証にしない。[Gemini APIの利用上限](https://ai.google.dev/gemini-api/docs/rate-limits)
 
 GPT-6 Astraのfunction calling、structured outputs、`reasoning.effort="high"`の対応は[OpenAIのモデル資料](https://developers.openai.com/api/docs/models/gpt-6-astra)で確認した。Claude Opus 5の識別子は[Anthropicのモデル資料](https://platform.claude.com/docs/en/models/opus-5/overview)で確認した。これは可積分性探索における能力比較の結果ではない。実際のアカウントでの利用可否と接続は未検証である。
 
@@ -68,6 +74,8 @@ OpenAIでは`strict=true`のfunction callingを使い、並列tool callを無効
 
 tool-call ID、返却メッセージ、会話継続に必要なプロバイダー固有の情報はLiteLLMの形式を保って保存する。本文文字列だけを抜き出して会話履歴を再構築しない。LiteLLMは推論内容を含むメッセージも扱うが、モデルやAPIによる差があるため、実際のtool callとtool resultの往復を確認する。[LiteLLMの推論メッセージ仕様](https://docs.litellm.ai/docs/reasoning_content)
 
+Geminiが返す`thought_signature`も会話の継続情報として保持する。これはプロバイダーが返す署名付きデータであり、内容を解釈せず、その情報を含む返却メッセージを次の呼出しに渡す。保存・再開を挟んだツール呼出しで情報が欠落しないことを確認する。[LiteLLMのGemini会話継続仕様](https://docs.litellm.ai/docs/providers/gemini#thought-signatures)
+
 プロバイダーを変更する場合は、検証済みの状態から新しい会話を開始し、変更を履歴に記録する。推論設定、出力上限、structured outputsの対応を全モデルで同一だとは仮定しない。未対応パラメータの黙った削除は無効にし、対応状況を確認したプロファイルだけを使用する。[LiteLLMのstructured outputs資料](https://docs.litellm.ai/docs/completion/json_mode)
 
 ローカル接続では、起動時の小さな接続確認でtool callingとJSON Schemaの対応を調べる。schema制約が使えなければ、JSONを返させてPydanticで検査する。その方式も評価条件として記録する。壊れた応答には検査エラーを1回返して修正を求め、それでも失敗したら`invalid_action`として保存する。
@@ -82,7 +90,7 @@ tool-call ID、返却メッセージ、会話継続に必要なプロバイダ�
 | `src/nlsm_lax/core/` | 模型、変分、Lie代数、曲率、検証 | LLM、LangGraph、MCP、PyTorchをimportしない |
 | `src/nlsm_lax/solvers/` | 係数方程式の解法、数値候補からの厳密係数の復元 | `core`で最終候補を再検証 |
 | `src/nlsm_lax/solvers/ml/` | 数値最適化、ニューラルネットワークによる候補生成 | PyTorchはこの任意モジュール内で読み込む。検証結果を書き換えない |
-| `src/nlsm_lax/tools/` | 登録済み関数の公開、ジョブへの変換 | 同じ関数をPythonとMCPから呼ぶ |
+| `src/nlsm_lax/tools/` | 登録済み関数の公開、実行単位・予算・ジョブの管理 | 同じ関数をPythonとMCPから呼ぶ。LangGraphとLiteLLMをimportしない |
 | `src/nlsm_lax/agent/` | 状態遷移、文脈の構築、終了条件 | LangGraphはこの層に置く |
 | `src/nlsm_lax/backends/llm/` | LiteLLM、mock、replay | LiteLLMはエージェント用の任意依存 |
 | `src/nlsm_lax/backends/wolfram/` | WolframScriptとの入出力 | Wolfram導入なしでも基本機能を使える |
@@ -90,7 +98,34 @@ tool-call ID、返却メッセージ、会話継続に必要なプロバイダ�
 | `src/nlsm_lax/cli.py`、`mcp_server.py` | コマンドラインとMCP | 物理計算を再実装しない |
 | `benchmarks/`、`tests/` | 模型、期待される判定、独立した検算 | 正解データは探索時の入力から除外 |
 
-Model Context Protocol（MCP）はツールを外部クライアントから呼ぶための接続方式である。LangGraph内部ではPython関数を直接呼び、通信を経由させない。MCPサーバーは標準入出力で動かす小さなラッパーとし、同じ引数・同じ返却型を使う。これにより、既存のコーディングエージェントから手動でツールを使う実験も、自動探索と比較できる。
+Model Context Protocol（MCP）はツールを外部クライアントから呼ぶための接続方式である。LangGraph内部ではPython関数を直接呼び、通信を経由させない。MCPサーバーは標準入出力で動かす小さなラッパーとし、同じ引数・同じ返却型を使う。外部エージェント自身が候補の提案、探索方法の選択、診断に基づく修正を行える。
+
+### 外部エージェントと組み込みエージェントの接続
+
+```mermaid
+flowchart TD
+    E[外部コーディングエージェント] -->|MCP| M[ローカルMCPサーバー]
+    M --> T[共通の物理ツール]
+    A[組み込みLangGraphエージェント] -->|Python呼出し| T
+    A --> L[LiteLLM]
+    L --> B[Gemini APIまたはローカルLLM]
+    T --> C[SymPyと任意のPyTorch]
+    T --> R[ジョブと検証記録]
+```
+
+MCPサーバーは[公式Python SDK](https://github.com/modelcontextprotocol/python-sdk)で実装する。初期の通信方式は標準入出力（stdio）とし、利用者のMCPクライアントが同じ計算機上でサーバープロセスを起動する。サーバー自身はLLMを呼ばず、LangGraph、LiteLLM、LLM用APIキーなしで動作する。MCP経由で接続元のLLMに生成を依頼する機能も初期版では使用しない。計算にはサーバーを起動した環境のCPU・GPUを使う。
+
+| 設定案 | 読み込む内容 | 利用する入口 |
+| --- | --- | --- |
+| `examples/configs/tools.toml` | 物理計算、探索範囲、数理計算の予算、保存先、MCP通信 | MCP、単体CLI、Python、および組み込みエージェント |
+| `examples/configs/llm.toml` | Gemini・ローカル等のLLM接続プロファイル | 組み込みエージェントだけ |
+| `examples/configs/search.toml` | 共通ツール設定への参照、LangGraph、LLM予算、評価条件 | 組み込みエージェントだけ |
+
+サーバーの起動コマンド案は`nlsm-lax mcp --config /path/to/tools.toml`である。これは未実装のコマンド仕様であり、そのまま実行できる手順ではない。実装後は、利用するクライアントのMCP設定に実行ファイルとこの引数を登録する。設定への参照は参照元ファイルからの相対パスとして解決し、保存先は作業ディレクトリに依存しないよう`tools.toml`からの相対パスとして解決する。
+
+入出力の型はPydanticからJSON Schemaとして公開する。計算結果はMCPの`structuredContent`へ格納し、互換用に同じJSONをテキストでも返す。大きな式は参照IDを返し、`read_artifact`で必要な成分を読む。プロトコルの標準出力にログを混ぜず、ログは標準エラー出力とファイルへ送る。[MCPのツール仕様](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)、[サーバー実装ガイド](https://modelcontextprotocol.io/docs/develop/build-server)
+
+基本の物理計算、MCP、組み込みエージェント、機械学習の追加依存を分ける。MCPだけを導入した環境での実行を受入条件にし、パッケージの初期化時にLangGraphやLiteLLMを無条件で読み込まない。長い計算の予算、状態、結果参照は共通ツールと保存層が管理し、LangGraphのチェックポイントを必須にしない。
 
 SymPyとWolframの間に汎用の記号計算言語は作らない。まず`solve_constraints`など用途を限定した境界を設け、厳密な係数と式のデータを渡す。Wolframの実行パスは設定で指定し、WindowsとLinuxで共通だと仮定しない。
 
@@ -115,7 +150,7 @@ flowchart TD
     V -->|不正な操作| P
 ```
 
-LLMの操作は`propose_ansatz`、`revise_ansatz`、`search_candidates`、`restrict_parameters`、`inspect_artifact`、`stop`に限定する。ansatzの提出・修正時には探索方法を`symbolic`または`ml`から選び、実行管理が制約の構築・候補探索・独立検証を進める。既定は`symbolic`とする。`search_candidates`は、登録済みのansatzについて方法や初期値を変えて再探索する操作である。`ml`は設定で有効にした対応実装があるときだけ選択可能にする。
+組み込みエージェントのLLM操作は`propose_ansatz`、`revise_ansatz`、`search_candidates`、`restrict_parameters`、`inspect_artifact`、`stop`に限定する。ansatzの提出・修正時には探索方法を`symbolic`または`ml`から選び、実行管理が制約の構築・候補探索・独立検証を進める。既定は`symbolic`とする。`search_candidates`は、登録済みのansatzについて方法や初期値を変えて再探索する操作である。`ml`は設定で有効にした対応実装があるときだけ選択可能にする。外部エージェントは第6節のツールを直接呼び、自身の手順でこれらの操作を組み立てる。
 
 機械学習を選んだ場合は、数値候補から厳密な式を復元してから検証器へ渡す。式を復元できなければ数値候補を保存し、未解決として次の操作へ進む。LLMには検証を省略する操作や、合格状態を書き込む操作を与えない。式の次数や項数、補助Lie代数、分母の形などは宣言された探索範囲内で変更できる。
 
@@ -150,7 +185,9 @@ LLMの操作は`propose_ansatz`、`revise_ansatz`、`search_candidates`、`restr
 | `check_spectral_parameter` | 候補、許した変換のクラス | 依存性、除去変換の有無、未確認範囲 |
 | `read_artifact` | 記録IDと成分・範囲 | 保存した式や検証記録の一部 |
 
-関数は同じ入力形式の通常のPython呼出しでも利用できる。長い計算はジョブとして登録し、`get_job`と`cancel_job`で状態を取得・停止する。キャンセルや時間切れは数理的な不成立と区別する。
+関数は同じ入力形式の通常のPython呼出しでも利用できる。共通の管理操作`create_run`は模型・領域・資源上限を受け取り、保存した入力への参照と`run_id`を発行する。以後の操作には`run_id`を付け、予算と結果を実行ごとに記録する。`get_run`で残予算と結果への参照を取得する。要求された資源上限はサーバー設定の上限以内とし、各ジョブにはその実行の残予算も適用する。
+
+長い計算はジョブとして登録して、`job_id`、進行状態、完了時の結果参照を持つ`JobHandle`を返す。`get_job`と`cancel_job`で状態を取得・停止し、完了結果を以下の`ToolResult`として取得する。計算中の状態を完了済みの物理判定として返さない。キャンセルや時間切れは数理的な不成立と区別する。再起動時は第8節の手順で既存ジョブを確認し、サーバーの切断後も計算が必ず継続すると仮定しない。
 
 共通の返却型`ToolResult`には、`execution_status`、`claim_status`、`assumptions_ref`、`artifact_refs`、`candidate_refs`、`diagnostics`、実行時間、バックエンドのバージョンを含める。候補を返さない操作では`candidate_refs`は空の配列とする。`execution_status`は`completed`、`timeout`、`error`、`unsupported`、`cancelled`から選ぶ。`claim_status`は`established`、`refuted`、`unresolved`、`not_applicable`から選ぶ。たとえば候補の曲率残差が非零であることは、その候補を反証するが模型の非可積分性を意味しない。
 
@@ -168,11 +205,11 @@ LLMの操作は`propose_ansatz`、`revise_ansatz`、`search_candidates`、`restr
 
 ## 8. 資源上限と再開
 
-初期のクラウド設定案は、LLMリクエスト20回、候補10件、数理計算ジョブ40件、実行全体1時間を上限とする。LLMの修正要求と通信再試行も回数・費用に含める。単一ジョブは120秒、メモリは2 GiBを初期上限とし、超過した計算は別プロセスを終了する。
+初期設定案は、組み込みエージェントのLLMリクエスト20回、共通ツールの1実行につき候補10件、数理計算ジョブ40件、実行全体1時間を上限とする。LLMの修正要求と通信再試行も回数・費用に含める。単一ジョブは120秒、メモリは2 GiBを初期上限とし、超過した計算は別プロセスを終了する。共通ツール側の予算は`tools.toml`、組み込みエージェントのLLM予算は`search.toml`に置く。外部エージェント自身のLLM費用・利用上限は接続元が管理し、ツールサーバー側で観測できない値は不明として記録する。
 
-機械学習ジョブには`ml_search`の時間・メモリ上限を使い、記号計算用の上限と分ける。学習の再試行、式の復元、最終検証も総予算に含める。ローカルLLMとGPUを共有する場合は同時実行を避け、両方の重みを載せたまま学習を開始しない。学習用のcheckpointには重み、optimizerの状態、乱数の状態、学習ステップを保存し、LangGraphの再開記録から参照する。
+機械学習ジョブには`ml_search`の時間・メモリ上限を使い、記号計算用の上限と分ける。学習の再試行、式の復元、最終検証も総予算に含める。ローカルLLMとGPUを共有する場合は同時実行を避け、両方の重みを載せたまま学習を開始しない。学習用のcheckpointには重み、optimizerの状態、乱数の状態、学習ステップを保存し、共通のジョブ記録から参照する。組み込みエージェントもこのジョブ記録を使って再開する。
 
-クラウドの予算案は1実行10米ドルである。これは実際の消費額の予測ではない。API呼出し前に、入力と出力上限から保守的な費用を予約し、結果で精算する。価格の確認日と料金区分を設定に保持し、価格や利用量が不明な場合は課金を伴う次の呼出しを停止する。タイムアウトしたリクエストの予約を勝手に返金扱いにせず、確認待ちにする。外部API側で既に発生した課金をクライアントから取り消すことはできない。
+開発用のAPI費用上限は0米ドルとし、`mock`、`gemini_free`、`local`だけを選択可能にする。Geminiの料金区分は無料枠を使うプロジェクトで確認し、単にモデルの料金を0と記録して有料プロジェクトを呼ぶことは認めない。任意の有料比較を行う場合は、使用可能なプロファイルと正の予算を別途設定する。その場合、API呼出し前に入力と出力上限から保守的な費用を予約し、結果で精算する。価格の確認日と料金区分を設定に保持し、価格や利用量が不明な場合は課金を伴う次の呼出しを停止する。タイムアウトしたリクエストの予約を勝手に返金扱いにせず、確認待ちにする。
 
 ジョブには、入力ハッシュ、ツール名とバージョン、定義域、資源上限、seedから作るキーを付ける。完了結果は一時ファイルからのatomic renameとデータベースのトランザクションで登録する。プロセスが終了して再開した場合、完了済み結果を再利用し、実行中だったジョブは生存確認後に再登録する。時間切れは同じ設定では再計算しないが、資源上限を変えた新しいジョブは許す。
 
