@@ -10,6 +10,7 @@
 | [物理検証](docs/verification.ja.md) | 入力の定義、零曲率条件、運動方程式の回収、判定の適用範囲 |
 | [機械学習による候補探索](docs/ml-search.ja.md) | 学習対象、探索ツール、厳密な式の復元、検証への接続 |
 | [実装計画](docs/implementation-plan.ja.md) | 実装順序、受入条件、比較実験、研究段階への移行条件 |
+| [論文評価と設計の点検](docs/research-evaluation.ja.md) | 情報系・物理×AIの先行例、現状との照合、評価実験の計画案 |
 | [設定例](examples/configs/) | オフライン、クラウド、ローカル推論の設定案 |
 
 初期構成はPython、SymPy、Pydantic、LangGraph、LiteLLM、SQLiteです。LangGraphが探索の進行を管理し、LiteLLMがLLMへの接続を切り替えます。物理計算はLLMやLangGraphから独立したPython関数として提供し、同じ関数をコマンドラインとModel Context Protocol（MCP）から利用できるようにします。
