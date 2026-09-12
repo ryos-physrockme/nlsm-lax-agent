@@ -1,6 +1,6 @@
 # 要件定義書
 
-対象：nlsm-lax-agent。更新日：2026年9月12日。状態：ヒアリング結果と初期版の到達点を整理した草案。本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：ヒアリング結果と初期版の到達点を整理した要件。PCMの初期実装を追加し、受入れは確認項目ごとに記録する。
 
 本書は、利用目的、対象範囲、システムに求める振る舞い、受入条件を定める。外部設計では、利用者から見た操作・入出力・利用条件を定める。内部設計では、それを支える構成と各部分の役割、データ構造、数式の規約と処理手順を具体化する。文書を確認する順序は[文書一覧と参照の方針](../../README.md#documentation)に従う。
 
@@ -180,7 +180,7 @@ MCP（Model Context Protocol）は、外部エージェントがツールを呼�
 
 ### 8.1 最初の受入範囲
 
-参照元：[文書一覧](../../README.md#documentation)。
+参照元：[文書一覧](../../README.md#documentation)。実装状況：[PCMの初期実装](../02-external-design/external-design.ja.md#design-pcm-implementation)。
 
 入力の内部設計：[入力詳細の対象と処理](../03-internal-design/model-input.ja.md#detail-scope)。
 

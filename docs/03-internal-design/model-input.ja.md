@@ -1,6 +1,6 @@
 # 内部設計書：模型とLax候補の入力
 
-対象：nlsm-lax-agent。更新日：2026年9月12日。状態：入力についての既存案。以下の型と関数は暫定仕様であり、本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：PCMの入力構造と数式規約を初期実装に使用。一般の模型入力は未実装。
 
 本書では、最初の受入対象であるSU(2)主カイラル模型について、入力データ、数式の規約、入力検査と正規化を定める。[外部設計書](../02-external-design/external-design.ja.md)を具体化する内部設計の一部である。
 
@@ -8,7 +8,7 @@
 
 ## 1. 対象と処理の境界
 
-[開発順序と移行条件](../01-requirements/requirements.ja.md#req-development)に従い、本書の入力形式は初期版の外部設計に合わせて見直す。利用者が数式で与える模型を計算用の表現へ渡す方法は未確定であり、ここに記載したJSON形式を利用者への必須入力形式として確定したものではない。
+[開発順序と移行条件](../01-requirements/requirements.ja.md#req-development)に従い、本書の入力形式は初期版の外部設計に合わせて見直す。初期実装ではPythonの式またはTOML内の数式文字列から、補助関数でこの構造を組み立てる。JSONを直接手書きすることは必須ではない。入力受付の細かなエラー分類は、この設計案の分類をすべて個別実装したものではなく、構造エラー・未対応仕様にまとめる場合がある。
 
 対応する上位項目：[最初の受入範囲](../01-requirements/requirements.ja.md#req-initial-acceptance)、[後続設計](../02-external-design/external-design.ja.md#design-next)、[文書の順序](../../README.md#documentation)。
 
@@ -33,7 +33,7 @@ Python、MCP、付属エージェントは同じJSON互換データを計算ラ�
 
 ### 2.1 場・作用・方程式
 
-参照元：[数学的規約](#detail-conventions)、[模型入力](#detail-model)、[既知模型の確認](#case-known)。
+参照元：[数学的規約](#detail-conventions)、[模型入力](#detail-model)、[既知模型の確認](#case-known)、[初期版の入力操作](../02-external-design/external-design.ja.md#design-pcm-implementation)、[PCM検証処理](pcm-verification.ja.md#verification-scope)。
 
 時空は、固定したLorentz計量を持つ可縮な開領域とする。座標を $`x^\pm=t\pm x`$、微分を $`\partial_\pm=\partial/\partial x^\pm=(\partial_t\pm\partial_x)/2`$ と定義する。変分する場は滑らかな群値場 $`g(x^+,x^-)\in SU(2)`$ のみであり、変分はコンパクトな台を持つ。境界条件と時空計量の変分による拘束条件は課さない。
 
