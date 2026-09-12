@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "nlsm-lax": {
+      "command": "nlsm-lax-mcp",
+      "args": ["--tool-seconds", "30"]
+    }
+  }
+}

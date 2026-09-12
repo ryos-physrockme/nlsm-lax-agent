@@ -1,0 +1,930 @@
+{
+  "payload": {
+    "schema_version": 1,
+    "state": {
+      "attempts": 2,
+      "backend": {
+        "is_llm": false,
+        "kind": "deterministic_fixture"
+      },
+      "completion_tokens": 0,
+      "elapsed_seconds": 2.5619538910032134,
+      "goal": "Demonstrate rejection, ansatz revision and exact verification.",
+      "history": [
+        {
+          "arguments": {
+            "minus": "1",
+            "model": {
+              "action": {
+                "currents": [
+                  "j_plus",
+                  "j_minus"
+                ],
+                "measure": [
+                  "x_plus",
+                  "x_minus"
+                ],
+                "pairing": "trace_fundamental",
+                "prefactor": "-1/(2*kappa**2)"
+              },
+              "conventions": "su2_left_current_v1",
+              "coupling": {
+                "domain": "positive_real",
+                "name": "kappa"
+              },
+              "domain": {
+                "boundary_conditions": "none",
+                "field_regularity": "smooth",
+                "spacetime": "contractible_lorentzian_patch",
+                "variation": "compact_support"
+              },
+              "field": {
+                "name": "g",
+                "target": "SU2"
+              },
+              "model_type": "su2_pcm",
+              "schema_version": 1
+            },
+            "model_revision": 1,
+            "plus": "1",
+            "run_id": "7e1da98c306c455a84b77a79d6ce59fc"
+          },
+          "attempt": 1,
+          "outcome": {
+            "elapsed_seconds": 1.084757,
+            "result": {
+              "candidate": {
+                "components": {
+                  "minus": [
+                    {
+                      "current": "j_minus",
+                      "matrix": [
+                        [
+                          "1",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "1",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "1"
+                        ]
+                      ]
+                    }
+                  ],
+                  "plus": [
+                    {
+                      "current": "j_plus",
+                      "matrix": [
+                        [
+                          "1",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "1",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "1"
+                        ]
+                      ]
+                    }
+                  ]
+                },
+                "gauge_equivalence": {
+                  "dependence": "local_finite_jet",
+                  "group": "SL2C",
+                  "regularity": "smooth_fields_holomorphic_z",
+                  "scope": "generic_local"
+                },
+                "model_ref": {
+                  "model_revision": 1,
+                  "run_id": "7e1da98c306c455a84b77a79d6ce59fc"
+                },
+                "representation": "su2_current_linear_v1",
+                "schema_version": 1,
+                "spectral_parameter": {
+                  "base": "complex_plane",
+                  "exclude_zeros": [],
+                  "name": "z"
+                }
+              },
+              "checks": {
+                "eom_recovery": {
+                  "coefficient_rows": [
+                    [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "0",
+                      "0",
+                      "0"
+                    ]
+                  ],
+                  "denominator": "1",
+                  "rank": 0,
+                  "status": "failed",
+                  "unrecovered_directions": [
+                    [
+                      "1",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "0",
+                      "1",
+                      "0"
+                    ],
+                    [
+                      "0",
+                      "0",
+                      "1"
+                    ]
+                  ]
+                },
+                "on_shell_flatness": {
+                  "residual": [
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  "status": "passed"
+                },
+                "spectral_nonremovability": {
+                  "method": "identity_gauge",
+                  "status": "failed",
+                  "witness": {
+                    "h": [
+                      [
+                        "1",
+                        "0"
+                      ],
+                      [
+                        "0",
+                        "1"
+                      ]
+                    ]
+                  }
+                }
+              },
+              "conclusion_scope": "This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.",
+              "curvature": [
+                "-dminus_jp1 + dplus_jm1 - jm2*jp3 + jm3*jp2",
+                "-dminus_jp2 + dplus_jm2 + jm1*jp3 - jm3*jp1",
+                "-dminus_jp3 + dplus_jm3 - jm1*jp2 + jm2*jp1"
+              ],
+              "decomposition": {
+                "eom_coefficient": [
+                  [
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "0",
+                    "0",
+                    "0"
+                  ]
+                ],
+                "identity_coefficient": [
+                  [
+                    "1",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "0",
+                    "1",
+                    "0"
+                  ],
+                  [
+                    "0",
+                    "0",
+                    "1"
+                  ]
+                ],
+                "remainder": [
+                  "0",
+                  "0",
+                  "0"
+                ]
+              },
+              "model": {
+                "action": {
+                  "currents": [
+                    "j_plus",
+                    "j_minus"
+                  ],
+                  "measure": [
+                    "x_plus",
+                    "x_minus"
+                  ],
+                  "pairing": "trace_fundamental",
+                  "prefactor": "-1/(2*kappa**2)"
+                },
+                "conventions": "su2_left_current_v1",
+                "coupling": {
+                  "domain": "positive_real",
+                  "name": "kappa"
+                },
+                "domain": {
+                  "boundary_conditions": "none",
+                  "field_regularity": "smooth",
+                  "spacetime": "contractible_lorentzian_patch",
+                  "variation": "compact_support"
+                },
+                "field": {
+                  "name": "g",
+                  "target": "SU2"
+                },
+                "model_type": "su2_pcm",
+                "schema_version": 1
+              },
+              "schema_version": 1,
+              "status": "rejected"
+            },
+            "status": "completed"
+          },
+          "reason": "Integration fixture: first test the current itself, whose flatness need not encode dynamics.",
+          "tool": "pcm_verify_scalar"
+        },
+        {
+          "arguments": {
+            "minus": "b/(1+z)",
+            "model_revision": 1,
+            "plus": "a/(1-z)",
+            "run_id": "7e1da98c306c455a84b77a79d6ce59fc",
+            "unknowns": [
+              "a",
+              "b"
+            ]
+          },
+          "attempt": 2,
+          "outcome": {
+            "elapsed_seconds": 1.420704,
+            "result": {
+              "ansatz": {
+                "minus": "b/(1+z)",
+                "plus": "a/(1-z)",
+                "unknowns": [
+                  "a",
+                  "b"
+                ]
+              },
+              "candidates": [
+                {
+                  "coefficients": {
+                    "a": "0",
+                    "b": "0"
+                  },
+                  "verification": {
+                    "candidate": {
+                      "components": {
+                        "minus": [
+                          {
+                            "current": "j_minus",
+                            "matrix": [
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ]
+                            ]
+                          }
+                        ],
+                        "plus": [
+                          {
+                            "current": "j_plus",
+                            "matrix": [
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "0"
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "gauge_equivalence": {
+                        "dependence": "local_finite_jet",
+                        "group": "SL2C",
+                        "regularity": "smooth_fields_holomorphic_z",
+                        "scope": "generic_local"
+                      },
+                      "model_ref": {
+                        "model_revision": 1,
+                        "run_id": "7e1da98c306c455a84b77a79d6ce59fc"
+                      },
+                      "representation": "su2_current_linear_v1",
+                      "schema_version": 1,
+                      "spectral_parameter": {
+                        "base": "complex_plane",
+                        "exclude_zeros": [
+                          "z + 1",
+                          "z - 1"
+                        ],
+                        "name": "z"
+                      }
+                    },
+                    "checks": {
+                      "eom_recovery": {
+                        "coefficient_rows": [
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ]
+                        ],
+                        "denominator": "1",
+                        "rank": 0,
+                        "status": "failed",
+                        "unrecovered_directions": [
+                          [
+                            "1",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "1",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "1"
+                          ]
+                        ]
+                      },
+                      "on_shell_flatness": {
+                        "residual": [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        "status": "passed"
+                      },
+                      "spectral_nonremovability": {
+                        "method": "identity_gauge",
+                        "status": "failed",
+                        "witness": {
+                          "h": [
+                            [
+                              "1",
+                              "0"
+                            ],
+                            [
+                              "0",
+                              "1"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "conclusion_scope": "This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.",
+                    "curvature": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "decomposition": {
+                      "eom_coefficient": [
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ]
+                      ],
+                      "identity_coefficient": [
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "0"
+                        ]
+                      ],
+                      "remainder": [
+                        "0",
+                        "0",
+                        "0"
+                      ]
+                    },
+                    "model": {
+                      "action": {
+                        "currents": [
+                          "j_plus",
+                          "j_minus"
+                        ],
+                        "measure": [
+                          "x_plus",
+                          "x_minus"
+                        ],
+                        "pairing": "trace_fundamental",
+                        "prefactor": "-1/(2*kappa**2)"
+                      },
+                      "conventions": "su2_left_current_v1",
+                      "coupling": {
+                        "domain": "positive_real",
+                        "name": "kappa"
+                      },
+                      "domain": {
+                        "boundary_conditions": "none",
+                        "field_regularity": "smooth",
+                        "spacetime": "contractible_lorentzian_patch",
+                        "variation": "compact_support"
+                      },
+                      "field": {
+                        "name": "g",
+                        "target": "SU2"
+                      },
+                      "model_type": "su2_pcm",
+                      "schema_version": 1
+                    },
+                    "schema_version": 1,
+                    "status": "rejected"
+                  }
+                },
+                {
+                  "coefficients": {
+                    "a": "1",
+                    "b": "1"
+                  },
+                  "verification": {
+                    "candidate": {
+                      "components": {
+                        "minus": [
+                          {
+                            "current": "j_minus",
+                            "matrix": [
+                              [
+                                "1/(z + 1)",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "1/(z + 1)",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "1/(z + 1)"
+                              ]
+                            ]
+                          }
+                        ],
+                        "plus": [
+                          {
+                            "current": "j_plus",
+                            "matrix": [
+                              [
+                                "-1/(z - 1)",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "-1/(z - 1)",
+                                "0"
+                              ],
+                              [
+                                "0",
+                                "0",
+                                "-1/(z - 1)"
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "gauge_equivalence": {
+                        "dependence": "local_finite_jet",
+                        "group": "SL2C",
+                        "regularity": "smooth_fields_holomorphic_z",
+                        "scope": "generic_local"
+                      },
+                      "model_ref": {
+                        "model_revision": 1,
+                        "run_id": "7e1da98c306c455a84b77a79d6ce59fc"
+                      },
+                      "representation": "su2_current_linear_v1",
+                      "schema_version": 1,
+                      "spectral_parameter": {
+                        "base": "complex_plane",
+                        "exclude_zeros": [
+                          "z + 1",
+                          "z - 1"
+                        ],
+                        "name": "z"
+                      }
+                    },
+                    "checks": {
+                      "eom_recovery": {
+                        "coefficient_rows": [
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "1",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "1",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "1"
+                          ]
+                        ],
+                        "denominator": "z**2 - 1",
+                        "rank": 3,
+                        "status": "passed",
+                        "unrecovered_directions": []
+                      },
+                      "on_shell_flatness": {
+                        "residual": [
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        "status": "passed"
+                      },
+                      "spectral_nonremovability": {
+                        "derivative": [
+                          [
+                            "(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)"
+                          ]
+                        ],
+                        "method": "characteristic_trace_invariant",
+                        "reason": "A nonconstant invariant obstructs removal; a constant invariant is inconclusive.",
+                        "reference": "https://arxiv.org/abs/0804.2031",
+                        "scope": "All smooth finite-jet local SL(2,C) gauges holomorphic in z on generic open sets.",
+                        "status": "passed",
+                        "trace_gram": [
+                          [
+                            "-z**2/(2*z**4 - 4*z**2 + 2)",
+                            "0",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "-z**2/(2*z**4 - 4*z**2 + 2)",
+                            "0"
+                          ],
+                          [
+                            "0",
+                            "0",
+                            "-z**2/(2*z**4 - 4*z**2 + 2)"
+                          ]
+                        ],
+                        "varying_entry": [
+                          0,
+                          0
+                        ]
+                      }
+                    },
+                    "conclusion_scope": "This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.",
+                    "curvature": [
+                      "dminus_jp1/(z - 1) + dplus_jm1/(z + 1) + jm2*jp3/((z - 1)*(z + 1)) - jm3*jp2/((z - 1)*(z + 1))",
+                      "dminus_jp2/(z - 1) + dplus_jm2/(z + 1) - jm1*jp3/((z - 1)*(z + 1)) + jm3*jp1/((z - 1)*(z + 1))",
+                      "dminus_jp3/(z - 1) + dplus_jm3/(z + 1) + jm1*jp2/((z - 1)*(z + 1)) - jm2*jp1/((z - 1)*(z + 1))"
+                    ],
+                    "decomposition": {
+                      "eom_coefficient": [
+                        [
+                          "z/(z**2 - 1)",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "z/(z**2 - 1)",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "z/(z**2 - 1)"
+                        ]
+                      ],
+                      "identity_coefficient": [
+                        [
+                          "-1/(z**2 - 1)",
+                          "0",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "-1/(z**2 - 1)",
+                          "0"
+                        ],
+                        [
+                          "0",
+                          "0",
+                          "-1/(z**2 - 1)"
+                        ]
+                      ],
+                      "remainder": [
+                        "0",
+                        "0",
+                        "0"
+                      ]
+                    },
+                    "model": {
+                      "action": {
+                        "currents": [
+                          "j_plus",
+                          "j_minus"
+                        ],
+                        "measure": [
+                          "x_plus",
+                          "x_minus"
+                        ],
+                        "pairing": "trace_fundamental",
+                        "prefactor": "-1/(2*kappa**2)"
+                      },
+                      "conventions": "su2_left_current_v1",
+                      "coupling": {
+                        "domain": "positive_real",
+                        "name": "kappa"
+                      },
+                      "domain": {
+                        "boundary_conditions": "none",
+                        "field_regularity": "smooth",
+                        "spacetime": "contractible_lorentzian_patch",
+                        "variation": "compact_support"
+                      },
+                      "field": {
+                        "name": "g",
+                        "target": "SU2"
+                      },
+                      "model_type": "su2_pcm",
+                      "schema_version": 1
+                    },
+                    "schema_version": 1,
+                    "status": "verified"
+                  }
+                }
+              ],
+              "coefficient_equations": [
+                "a - b",
+                "-2*a*b + a + b"
+              ],
+              "conclusion_scope": "Only the supplied scalar rational ansatz was attempted. An empty solve result is not a No-Go proof.",
+              "status": "candidates_found",
+              "unresolved_branches": []
+            },
+            "status": "completed"
+          },
+          "reason": "Integration fixture: after the missing-EOM result, try unequal rational spectral functions and solve their constants.",
+          "tool": "pcm_solve_scalar"
+        }
+      ],
+      "last_response": {
+        "completion_tokens": 0,
+        "model": "deterministic-integration-fixture",
+        "prompt_tokens": 0,
+        "response_id": null
+      },
+      "limits": {
+        "llm_seconds": 60.0,
+        "max_llm_calls": 6,
+        "max_output_tokens": 2048,
+        "max_steps": 6,
+        "memory_mb": null,
+        "tool_seconds": 30.0,
+        "total_output_tokens": 12288,
+        "total_seconds": 300.0
+      },
+      "llm_calls": 2,
+      "messages": [
+        {
+          "content": "You assist with classical SU(2) principal chiral model Lax search.\nReturn exactly one JSON object: {\"tool\": \"registered name\", \"arguments\": {...}, \"reason\": \"short ansatz rationale\"}.\nChoose a calculation, inspect its result, and revise the ansatz when it fails.\nUse exact expression strings with *, /, **, integers and z (I is the imaginary unit).\nDo not generate executable code. You may change coefficients and rational spectral functions within supported tools.\nThe model, run ID and revision are supplied by the host; omit those arguments.\nThe host alone decides verification from all three checks. Flatness alone is insufficient.\nTool failure or an empty coefficient solve does not establish model nonintegrability.\nIf no supported calculation can help, use tool=\"finish\", arguments={}, and explain alternatives and limitations in reason.\nThe independent spectral parameter is z. It is distinct from the coupling kappa.\n\nAvailable tools:\n[{\"description\":\"Derive all PCM EOM by constrained group variation.\",\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"model\":{\"additionalProperties\":true,\"title\":\"Model\",\"type\":\"object\"}},\"required\":[\"model\"],\"title\":\"EquationArguments\",\"type\":\"object\"},\"name\":\"pcm_equations\"},{\"description\":\"Check flatness, recovery of all EOM and spectral nonremovability.\",\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"candidate\":{\"additionalProperties\":true,\"title\":\"Candidate\",\"type\":\"object\"},\"check_essential\":{\"default\":true,\"title\":\"Check Essential\",\"type\":\"boolean\"},\"model\":{\"additionalProperties\":true,\"title\":\"Model\",\"type\":\"object\"},\"model_revision\":{\"default\":1,\"minimum\":1,\"title\":\"Model Revision\",\"type\":\"integer\"},\"removal_gauge\":{\"anyOf\":[{\"items\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"type\":\"array\"},{\"type\":\"null\"}],\"default\":null,\"title\":\"Removal Gauge\"},\"run_id\":{\"default\":\"standalone\",\"title\":\"Run Id\",\"type\":\"string\"}},\"required\":[\"model\",\"candidate\"],\"title\":\"VerifyArguments\",\"type\":\"object\"},\"name\":\"pcm_verify\"},{\"description\":\"Verify L_plus=plus(z)*j_plus and L_minus=minus(z)*j_minus. Missing exclusions are derived from denominators.\",\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"exclude_zeros\":{\"anyOf\":[{\"items\":{\"maxLength\":2048,\"minLength\":1,\"type\":\"string\"},\"type\":\"array\"},{\"type\":\"null\"}],\"default\":null,\"title\":\"Exclude Zeros\"},\"minus\":{\"maxLength\":2048,\"minLength\":1,\"title\":\"Minus\",\"type\":\"string\"},\"model\":{\"additionalProperties\":true,\"title\":\"Model\",\"type\":\"object\"},\"model_revision\":{\"default\":1,\"minimum\":1,\"title\":\"Model Revision\",\"type\":\"integer\"},\"plus\":{\"maxLength\":2048,\"minLength\":1,\"title\":\"Plus\",\"type\":\"string\"},\"run_id\":{\"default\":\"standalone\",\"title\":\"Run Id\",\"type\":\"string\"}},\"required\":[\"model\",\"plus\",\"minus\"],\"title\":\"ScalarArguments\",\"type\":\"object\"},\"name\":\"pcm_verify_scalar\"},{\"description\":\"Solve 1–6 constant coefficients in a rational scalar current ansatz and verify the candidates.\",\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"minus\":{\"maxLength\":2048,\"minLength\":1,\"title\":\"Minus\",\"type\":\"string\"},\"model_revision\":{\"default\":1,\"minimum\":1,\"title\":\"Model Revision\",\"type\":\"integer\"},\"plus\":{\"maxLength\":2048,\"minLength\":1,\"title\":\"Plus\",\"type\":\"string\"},\"run_id\":{\"default\":\"standalone\",\"title\":\"Run Id\",\"type\":\"string\"},\"unknowns\":{\"items\":{\"type\":\"string\"},\"maxItems\":6,\"minItems\":1,\"title\":\"Unknowns\",\"type\":\"array\"}},\"required\":[\"plus\",\"minus\",\"unknowns\"],\"title\":\"SolveArguments\",\"type\":\"object\"},\"name\":\"pcm_solve_scalar\"}]",
+          "role": "system"
+        },
+        {
+          "content": "{\"goal\":\"Demonstrate rejection, ansatz revision and exact verification.\",\"model\":{\"action\":{\"currents\":[\"j_plus\",\"j_minus\"],\"measure\":[\"x_plus\",\"x_minus\"],\"pairing\":\"trace_fundamental\",\"prefactor\":\"-1/(2*kappa**2)\"},\"conventions\":\"su2_left_current_v1\",\"coupling\":{\"domain\":\"positive_real\",\"name\":\"kappa\"},\"domain\":{\"boundary_conditions\":\"none\",\"field_regularity\":\"smooth\",\"spacetime\":\"contractible_lorentzian_patch\",\"variation\":\"compact_support\"},\"field\":{\"name\":\"g\",\"target\":\"SU2\"},\"model_type\":\"su2_pcm\",\"schema_version\":1}}",
+          "role": "user"
+        },
+        {
+          "content": "{\"arguments\":{\"minus\":\"1\",\"plus\":\"1\"},\"reason\":\"Integration fixture: first test the current itself, whose flatness need not encode dynamics.\",\"tool\":\"pcm_verify_scalar\"}",
+          "role": "assistant"
+        },
+        {
+          "content": "Calculation result:\n{\"elapsed_seconds\":1.084757,\"result\":{\"candidate\":{\"components\":{\"minus\":[{\"current\":\"j_minus\",\"matrix\":[[\"1\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]}],\"plus\":[{\"current\":\"j_plus\",\"matrix\":[[\"1\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]}]},\"gauge_equivalence\":{\"dependence\":\"local_finite_jet\",\"group\":\"SL2C\",\"regularity\":\"smooth_fields_holomorphic_z\",\"scope\":\"generic_local\"},\"model_ref\":{\"model_revision\":1,\"run_id\":\"7e1da98c306c455a84b77a79d6ce59fc\"},\"representation\":\"su2_current_linear_v1\",\"schema_version\":1,\"spectral_parameter\":{\"base\":\"complex_plane\",\"exclude_zeros\":[],\"name\":\"z\"}},\"checks\":{\"eom_recovery\":{\"coefficient_rows\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]],\"denominator\":\"1\",\"rank\":0,\"status\":\"failed\",\"unrecovered_directions\":[[\"1\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]},\"on_shell_flatness\":{\"residual\":[\"0\",\"0\",\"0\"],\"status\":\"passed\"},\"spectral_nonremovability\":{\"method\":\"identity_gauge\",\"status\":\"failed\",\"witness\":{\"h\":[[\"1\",\"0\"],[\"0\",\"1\"]]}}},\"conclusion_scope\":\"This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.\",\"curvature\":[\"-dminus_jp1 + dplus_jm1 - jm2*jp3 + jm3*jp2\",\"-dminus_jp2 + dplus_jm2 + jm1*jp3 - jm3*jp1\",\"-dminus_jp3 + dplus_jm3 - jm1*jp2 + jm2*jp1\"],\"decomposition\":{\"eom_coefficient\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]],\"identity_coefficient\":[[\"1\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]],\"remainder\":[\"0\",\"0\",\"0\"]},\"model\":{\"action\":{\"currents\":[\"j_plus\",\"j_minus\"],\"measure\":[\"x_plus\",\"x_minus\"],\"pairing\":\"trace_fundamental\",\"prefactor\":\"-1/(2*kappa**2)\"},\"conventions\":\"su2_left_current_v1\",\"coupling\":{\"domain\":\"positive_real\",\"name\":\"kappa\"},\"domain\":{\"boundary_conditions\":\"none\",\"field_regularity\":\"smooth\",\"spacetime\":\"contractible_lorentzian_patch\",\"variation\":\"compact_support\"},\"field\":{\"name\":\"g\",\"target\":\"SU2\"},\"model_type\":\"su2_pcm\",\"schema_version\":1},\"schema_version\":1,\"status\":\"rejected\"},\"status\":\"completed\"}",
+          "role": "user"
+        },
+        {
+          "content": "{\"arguments\":{\"minus\":\"b/(1+z)\",\"plus\":\"a/(1-z)\",\"unknowns\":[\"a\",\"b\"]},\"reason\":\"Integration fixture: after the missing-EOM result, try unequal rational spectral functions and solve their constants.\",\"tool\":\"pcm_solve_scalar\"}",
+          "role": "assistant"
+        },
+        {
+          "content": "Calculation result:\n{\"elapsed_seconds\":1.420704,\"result\":{\"ansatz\":{\"minus\":\"b/(1+z)\",\"plus\":\"a/(1-z)\",\"unknowns\":[\"a\",\"b\"]},\"candidates\":[{\"coefficients\":{\"a\":\"0\",\"b\":\"0\"},\"verification\":{\"candidate\":{\"components\":{\"minus\":[{\"current\":\"j_minus\",\"matrix\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]]}],\"plus\":[{\"current\":\"j_plus\",\"matrix\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]]}]},\"gauge_equivalence\":{\"dependence\":\"local_finite_jet\",\"group\":\"SL2C\",\"regularity\":\"smooth_fields_holomorphic_z\",\"scope\":\"generic_local\"},\"model_ref\":{\"model_revision\":1,\"run_id\":\"7e1da98c306c455a84b77a79d6ce59fc\"},\"representation\":\"su2_current_linear_v1\",\"schema_version\":1,\"spectral_parameter\":{\"base\":\"complex_plane\",\"exclude_zeros\":[\"z + 1\",\"z - 1\"],\"name\":\"z\"}},\"checks\":{\"eom_recovery\":{\"coefficient_rows\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]],\"denominator\":\"1\",\"rank\":0,\"status\":\"failed\",\"unrecovered_directions\":[[\"1\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]},\"on_shell_flatness\":{\"residual\":[\"0\",\"0\",\"0\"],\"status\":\"passed\"},\"spectral_nonremovability\":{\"method\":\"identity_gauge\",\"status\":\"failed\",\"witness\":{\"h\":[[\"1\",\"0\"],[\"0\",\"1\"]]}}},\"conclusion_scope\":\"This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.\",\"curvature\":[\"0\",\"0\",\"0\"],\"decomposition\":{\"eom_coefficient\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]],\"identity_coefficient\":[[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\"]],\"remainder\":[\"0\",\"0\",\"0\"]},\"model\":{\"action\":{\"currents\":[\"j_plus\",\"j_minus\"],\"measure\":[\"x_plus\",\"x_minus\"],\"pairing\":\"trace_fundamental\",\"prefactor\":\"-1/(2*kappa**2)\"},\"conventions\":\"su2_left_current_v1\",\"coupling\":{\"domain\":\"positive_real\",\"name\":\"kappa\"},\"domain\":{\"boundary_conditions\":\"none\",\"field_regularity\":\"smooth\",\"spacetime\":\"contractible_lorentzian_patch\",\"variation\":\"compact_support\"},\"field\":{\"name\":\"g\",\"target\":\"SU2\"},\"model_type\":\"su2_pcm\",\"schema_version\":1},\"schema_version\":1,\"status\":\"rejected\"}},{\"coefficients\":{\"a\":\"1\",\"b\":\"1\"},\"verification\":{\"candidate\":{\"components\":{\"minus\":[{\"current\":\"j_minus\",\"matrix\":[[\"1/(z + 1)\",\"0\",\"0\"],[\"0\",\"1/(z + 1)\",\"0\"],[\"0\",\"0\",\"1/(z + 1)\"]]}],\"plus\":[{\"current\":\"j_plus\",\"matrix\":[[\"-1/(z - 1)\",\"0\",\"0\"],[\"0\",\"-1/(z - 1)\",\"0\"],[\"0\",\"0\",\"-1/(z - 1)\"]]}]},\"gauge_equivalence\":{\"dependence\":\"local_finite_jet\",\"group\":\"SL2C\",\"regularity\":\"smooth_fields_holomorphic_z\",\"scope\":\"generic_local\"},\"model_ref\":{\"model_revision\":1,\"run_id\":\"7e1da98c306c455a84b77a79d6ce59fc\"},\"representation\":\"su2_current_linear_v1\",\"schema_version\":1,\"spectral_parameter\":{\"base\":\"complex_plane\",\"exclude_zeros\":[\"z + 1\",\"z - 1\"],\"name\":\"z\"}},\"checks\":{\"eom_recovery\":{\"coefficient_rows\":[[\"0\",\"0\",\"0\"],[\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"1\",\"0\"],[\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\"]],\"denominator\":\"z**2 - 1\",\"rank\":3,\"status\":\"passed\",\"unrecovered_directions\":[]},\"on_shell_flatness\":{\"residual\":[\"0\",\"0\",\"0\"],\"status\":\"passed\"},\"spectral_nonremovability\":{\"derivative\":[[\"(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)\",\"0\",\"0\"],[\"0\",\"(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)\",\"0\"],[\"0\",\"0\",\"(z**3 + z)/(z**6 - 3*z**4 + 3*z**2 - 1)\"]],\"method\":\"characteristic_trace_invariant\",\"reason\":\"A nonconstant invariant obstructs removal; a constant invariant is inconclusive.\",\"reference\":\"https://arxiv.org/abs/0804.2031\",\"scope\":\"All smooth finite-jet local SL(2,C) gauges holomorphic in z on generic open sets.\",\"status\":\"passed\",\"trace_gram\":[[\"-z**2/(2*z**4 - 4*z**2 + 2)\",\"0\",\"0\"],[\"0\",\"-z**2/(2*z**4 - 4*z**2 + 2)\",\"0\"],[\"0\",\"0\",\"-z**2/(2*z**4 - 4*z**2 + 2)\"]],\"varying_entry\":[0,0]}},\"conclusion_scope\":\"This candidate on the declared domain; no assertion of Liouville integrability or model nonintegrability.\",\"curvature\":[\"dminus_jp1/(z - 1) + dplus_jm1/(z + 1) + jm2*jp3/((z - 1)*(z + 1)) - jm3*jp2/((z - 1)*(z + 1))\",\"dminus_jp2/(z - 1) + dplus_jm2/(z + 1) - jm1*jp3/((z - 1)*(z + 1)) + jm3*jp1/((z - 1)*(z + 1))\",\"dminus_jp3/(z - 1) + dplus_jm3/(z + 1) + jm1*jp2/((z - 1)*(z + 1)) - jm2*jp1/((z - 1)*(z + 1))\"],\"decomposition\":{\"eom_coefficient\":[[\"z/(z**2 - 1)\",\"0\",\"0\"],[\"0\",\"z/(z**2 - 1)\",\"0\"],[\"0\",\"0\",\"z/(z**2 - 1)\"]],\"identity_coefficient\":[[\"-1/(z**2 - 1)\",\"0\",\"0\"],[\"0\",\"-1/(z**2 - 1)\",\"0\"],[\"0\",\"0\",\"-1/(z**2 - 1)\"]],\"remainder\":[\"0\",\"0\",\"0\"]},\"model\":{\"action\":{\"currents\":[\"j_plus\",\"j_minus\"],\"measure\":[\"x_plus\",\"x_minus\"],\"pairing\":\"trace_fundamental\",\"prefactor\":\"-1/(2*kappa**2)\"},\"conventions\":\"su2_left_current_v1\",\"coupling\":{\"domain\":\"positive_real\",\"name\":\"kappa\"},\"domain\":{\"boundary_conditions\":\"none\",\"field_regularity\":\"smooth\",\"spacetime\":\"contractible_lorentzian_patch\",\"variation\":\"compact_support\"},\"field\":{\"name\":\"g\",\"target\":\"SU2\"},\"model_type\":\"su2_pcm\",\"schema_version\":1},\"schema_version\":1,\"status\":\"verified\"}}],\"coefficient_equations\":[\"a - b\",\"-2*a*b + a + b\"],\"conclusion_scope\":\"Only the supplied scalar rational ansatz was attempted. An empty solve result is not a No-Go proof.\",\"status\":\"candidates_found\",\"unresolved_branches\":[]},\"status\":\"completed\"}",
+          "role": "user"
+        }
+      ],
+      "model": {
+        "action": {
+          "currents": [
+            "j_plus",
+            "j_minus"
+          ],
+          "measure": [
+            "x_plus",
+            "x_minus"
+          ],
+          "pairing": "trace_fundamental",
+          "prefactor": "-1/(2*kappa**2)"
+        },
+        "conventions": "su2_left_current_v1",
+        "coupling": {
+          "domain": "positive_real",
+          "name": "kappa"
+        },
+        "domain": {
+          "boundary_conditions": "none",
+          "field_regularity": "smooth",
+          "spacetime": "contractible_lorentzian_patch",
+          "variation": "compact_support"
+        },
+        "field": {
+          "name": "g",
+          "target": "SU2"
+        },
+        "model_type": "su2_pcm",
+        "schema_version": 1
+      },
+      "model_revision": 1,
+      "pending": null,
+      "prompt_tokens": 0,
+      "run_id": "7e1da98c306c455a84b77a79d6ce59fc",
+      "schema_version": 1,
+      "status": "verified",
+      "stop_requested": false,
+      "versions": {
+        "langgraph": "1.2.11",
+        "litellm": "1.100.1",
+        "mcp": "1.30.0",
+        "nlsm-lax-agent": "0.1.0",
+        "pydantic": "2.13.5",
+        "sympy": "1.14.0"
+      }
+    },
+    "events": [
+      {
+        "event": "created",
+        "status": "ready",
+        "attempts": 0,
+        "llm_calls": 0
+      },
+      {
+        "event": "llm_request",
+        "status": "proposing",
+        "attempts": 0,
+        "llm_calls": 1
+      },
+      {
+        "event": "proposal",
+        "status": "calculating",
+        "attempts": 0,
+        "llm_calls": 1
+      },
+      {
+        "event": "calculation_started",
+        "status": "calculating",
+        "attempts": 1,
+        "llm_calls": 1
+      },
+      {
+        "event": "calculation_finished",
+        "status": "ready",
+        "attempts": 1,
+        "llm_calls": 1
+      },
+      {
+        "event": "llm_request",
+        "status": "proposing",
+        "attempts": 1,
+        "llm_calls": 2
+      },
+      {
+        "event": "proposal",
+        "status": "calculating",
+        "attempts": 1,
+        "llm_calls": 2
+      },
+      {
+        "event": "calculation_started",
+        "status": "calculating",
+        "attempts": 2,
+        "llm_calls": 2
+      },
+      {
+        "event": "calculation_finished",
+        "status": "verified",
+        "attempts": 2,
+        "llm_calls": 2
+      }
+    ],
+    "export_scope": "Final run state with all messages and calculation history; event snapshots are summarized in this example."
+  },
+  "sha256": "319adb3a64d5dca76874401e9b119205f8611d258021876fa5498492fd6d48e4"
+}

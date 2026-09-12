@@ -1,6 +1,6 @@
 # 外部設計書：利用方法と操作
 
-対象：nlsm-lax-agent。更新日：2026年9月12日。状態：既存の設計案。ヒアリング後の要件に照らして初期版の範囲を具体化する。本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：全体設計とPCMの初期実装。実装済みの範囲は第8章に示す。
 
 本書は、2次元非線形シグマ模型のLax接続を探索・検証するソフトウェアについて、利用者が行う操作と、その入力・出力の全体像を定める。[要件定義書](../01-requirements/requirements.ja.md)を上位文書とし、各節と操作から対応する要件へリンクする。要件側にも、対応する設計へのリンクを付ける。[文書一覧と参照の方針](../../README.md#documentation)に従う。
 
@@ -134,3 +134,25 @@ Pythonで使う研究者も、必要な操作を選んで同じ流れを実行�
 [開発順序と移行条件](../01-requirements/requirements.ja.md#req-development)に従い、PCMの候補提案・計算・検証・再試行・報告を一続きに動かす範囲を具体化する。追加する設計対象は[ansatzの提案](../01-requirements/requirements.ja.md#req-f-14)、[探索失敗後の情報](../01-requirements/requirements.ja.md#req-f-15)、後続の[変形模型の提案](../01-requirements/requirements.ja.md#req-f-16)である。[エージェントの初期受入条件](../01-requirements/requirements.ja.md#accept-agent-loop)に対応する入力・出力と失敗時の例を先にそろえる。数式の入力と内部の計算表現の受け渡しを明記し、[入力の既存案](../03-internal-design/model-input.ja.md#detail-scope)を見直す。3検査については、同書の[後続設計への引継ぎ](../03-internal-design/model-input.ja.md#detail-handoff)に従って処理と根拠を具体化する。
 
 初期版に必要な入出力、実行管理、接続、判定手順を確認した範囲から実装する。後続の対応模型、探索方法、配布と研究評価は段階的に具体化する。[要件定義書第9章](../01-requirements/requirements.ja.md#req-handoff)の伝達事項は、対応する設計で具体化し、要件番号と確認例を添える。最初の動作確認の範囲は、[要件定義書第8.1節](../01-requirements/requirements.ja.md#req-initial-acceptance)に従う。
+
+<a name="design-pcm-implementation"></a>
+
+## 8. PCMの初期実装
+
+参照元：[起動手順](../../README.md#quickstart)。上位項目：[最初の受入範囲](../01-requirements/requirements.ja.md#req-initial-acceptance)。内部設計：[検証処理と実行管理](../03-internal-design/pcm-verification.ja.md#verification-scope)。
+
+利用者はPCMの作用の係数を数式で与え、目的を文章で指定する。Pythonの `pcm_model`、TOMLの `model.action_prefactor` は同じ入力を組み立てる。群、カレントの定義、領域は[入力設計の規約](../03-internal-design/model-input.ja.md#conventions-model)を使い、完全な定義を結果に保存する。別の作用をPCMとして計算することはせず、未対応として返す。
+
+| 経路 | 入力と操作 | 得る結果 |
+| --- | --- | --- |
+| <a name="pcm-use-python"></a>[Python](#pcm-use-python) | `derive_equations`、`verify_candidate`、`solve_scalar_ansatz` | 辞書形式の数式、3検査の判定、根拠、適用範囲 |
+| <a name="pcm-use-mcp"></a>[MCP](#pcm-use-mcp) | `available_calculations` でスキーマを取得し、`pcm_equations`、`pcm_verify`、`pcm_verify_scalar`、`pcm_solve_scalar` の `arguments` に入力を渡す | 時間制限つき計算の結果。外部エージェントが反復と記録を管理する |
+| <a name="pcm-use-agent"></a>[付属エージェント](#pcm-use-agent) | `nlsm-lax agent` にTOMLを渡す | LangGraphによる提案・計算・再提案、SQLiteの履歴、終了理由、JSON出力 |
+
+付属エージェントが提案できる範囲は、現在登録された計算ツールの入力範囲である。初期版では有理関数の形と未定係数を変えて試す。場の高次の冪や非多項式の場依存を一般的に生成する機能は未実装で、対応範囲外の候補を検証済みにしない。
+
+MCPで `pcm_equations` に空の `arguments` を渡すと、標準PCMの完全な定義と運動方程式を取得できる。模型の項目を手書きせずに、この定義を確認して候補の検証へ進める。`pcm_verify_scalar` でも模型を省略した場合は同じPCMを選び、結果に完全な定義を含める。
+
+検証済みは3検査の成立を表す。判定できない非自明性は未判定、計算の時間切れは計算終了理由として返す。未定係数の求解から解が返らない場合も、指定したansatzで候補が得られなかったという結果に留める。エージェントの終了時の提案は未検証の提案として保存する。
+
+実装済みの受入確認は、既知PCM、零接続、カレント自身、除去可能なゲージ依存、未判定の扱い、保存と再検算、固定提案による再試行である。MCPの実通信とLiteLLMの模擬HTTP通信も確認する。実モデルの探索性能、研究対象への拡大、機械学習探索、公開配布、研究評価は未完了である。

@@ -1,0 +1,21 @@
+goal = "PCMのLax接続を探す。最初にカレント自身を検査し、不十分なら検証結果からansatzを修正する。"
+
+[model]
+action_prefactor = "-1/(2*kappa**2)"
+
+[llm]
+kind = "gemini"
+# Replace MODEL_ID with a currently available model in your free-tier project.
+# The client cannot determine whether billing is enabled on the Google project.
+model = "gemini/MODEL_ID"
+api_key_env = "GEMINI_API_KEY"
+json_mode = true
+
+[limits]
+max_steps = 6
+max_llm_calls = 6
+total_seconds = 300.0
+tool_seconds = 30.0
+llm_seconds = 60.0
+max_output_tokens = 2048
+total_output_tokens = 12288
