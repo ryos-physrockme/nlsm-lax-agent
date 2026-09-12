@@ -1,0 +1,27 @@
+# Proposed application configuration; these commands and loaders are not implemented.
+schema_version = 1
+mode = "evaluation"
+tools_config = "tools.toml" # Resolved relative to this file; shared with CLI and MCP.
+
+[agent]
+framework = "langgraph"
+llm_config = "llm.toml" # Resolved relative to this file.
+allowed_llm_profiles = ["mock", "gemini_free", "local"]
+checkpoint_backend = "sqlite"
+max_concurrent_llm_calls = 1
+
+[budget]
+max_llm_requests = 20 # Includes repairs and retries.
+max_api_cost_usd = 0.0 # Development uses a Free Tier Gemini project or local inference.
+max_input_tokens_total = 160000
+max_output_tokens_total = 64000 # Includes billed reasoning tokens when applicable.
+max_input_tokens_per_request = 16000
+max_output_tokens_per_request = 8192
+max_schema_repairs = 1
+automatic_transport_retries = 0
+
+[evaluation]
+reference_access = "disabled"
+provider_fallback = false
+log_human_interventions = true
+holdout_grouping = "model_family_and_equivalence_class"
