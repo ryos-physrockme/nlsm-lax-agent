@@ -9,12 +9,12 @@ from typing import Annotated
 from pydantic import Field, ValidationError
 
 from .expressions import InputError
-from .inputs import Expression, StrictModel
+from .inputs import Expression, StrictModel, pcm_model
 from .physics import derive_equations, solve_scalar_ansatz, verify_candidate, verify_scalar
 
 
 class EquationArguments(StrictModel):
-    model: dict
+    model: dict = Field(default_factory=pcm_model)
 
 
 class VerifyArguments(EquationArguments):
@@ -50,7 +50,7 @@ class Tool:
 
 
 REGISTRY = {
-    "pcm_equations": Tool("pcm_equations", "Derive all PCM EOM by constrained group variation.", EquationArguments, derive_equations),
+    "pcm_equations": Tool("pcm_equations", "Derive all PCM EOM by constrained group variation. Omit model to select the documented SU(2) PCM; the full model definition is returned.", EquationArguments, derive_equations),
     "pcm_verify": Tool("pcm_verify", "Check flatness, recovery of all EOM and spectral nonremovability.", VerifyArguments, verify_candidate),
     "pcm_verify_scalar": Tool("pcm_verify_scalar", "Verify L_plus=plus(z)*j_plus and L_minus=minus(z)*j_minus. Missing exclusions are derived from denominators.", ScalarArguments, verify_scalar),
     "pcm_solve_scalar": Tool("pcm_solve_scalar", "Solve 1–6 constant coefficients in a rational scalar current ansatz and verify the candidates.", SolveArguments, solve_scalar_ansatz),

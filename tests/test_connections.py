@@ -35,7 +35,9 @@ def test_mcp_stdio_tools_execute_independently_of_bundled_agent():
                 await session.initialize()
                 names = {t.name for t in (await session.list_tools()).tools}
                 assert {"pcm_equations", "pcm_verify", "pcm_verify_scalar", "pcm_solve_scalar"} <= names
-                result = await session.call_tool("pcm_verify_scalar", {"arguments": {"model": pcm_model(), "plus": "1/(1-z)", "minus": "1/(1+z)"}})
+                model_result = await session.call_tool("pcm_equations", {"arguments": {}})
+                assert model_result.structuredContent["result"]["model"] == pcm_model()
+                result = await session.call_tool("pcm_verify_scalar", {"arguments": {"plus": "1/(1-z)", "minus": "1/(1+z)"}})
                 assert not result.isError
                 assert result.structuredContent["status"] == "completed"
                 assert result.structuredContent["result"]["status"] == "verified"
