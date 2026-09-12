@@ -1,14 +1,14 @@
-# 詳細設計書：模型とLax候補の入力
+# 内部設計書：模型とLax候補の入力
 
 対象：nlsm-lax-agent。更新日：2026年9月12日。状態：確認用の草案。以下の型と関数は実装予定の仕様であり、本体は未実装。
 
-本書では、最初の受入対象であるSU(2)主カイラル模型について、入力データ、数式の規約、入力検査と正規化を定める。[外部設計書](external-design.ja.md)を具体化する詳細設計の一部である。
+本書では、最初の受入対象であるSU(2)主カイラル模型について、入力データ、数式の規約、入力検査と正規化を定める。[外部設計書](../02-external-design/external-design.ja.md)を具体化する内部設計の一部である。
 
 <a name="detail-scope"></a>
 
 ## 1. 対象と処理の境界
 
-対応する上位項目：[最初の受入範囲](requirements.ja.md#req-initial-acceptance)、[後続設計](external-design.ja.md#design-next)、[文書の順序](../README.md#documentation)。
+対応する上位項目：[最初の受入範囲](../01-requirements/requirements.ja.md#req-initial-acceptance)、[後続設計](../02-external-design/external-design.ja.md#design-next)、[文書の順序](../../README.md#documentation)。
 
 本書で実装可能な粒度まで定めるのは、[模型の入力](#detail-model)、[候補の入力](#detail-candidate)、[数式の読み取り](#detail-expressions)、[入力検査](#detail-validation)である。[数学的規約](#detail-conventions)を両入力で共有し、[確認例](#detail-cases)を実装時の試験に用いる。後続項目は[第8章](#detail-handoff)に記す。
 
@@ -25,7 +25,7 @@ Python、MCP、付属エージェントは同じJSON互換データを計算ラ�
 
 ## 2. 数学的規約
 
-対応する上位項目：[模型](external-design.ja.md#input-model)、[候補の接続](external-design.ja.md#input-candidate)。入力で指定する規約名 `su2_left_current_v1` は、この章全体を指す。使用箇所：[模型入力](#detail-model)、[候補入力](#detail-candidate)。
+対応する上位項目：[模型](../02-external-design/external-design.ja.md#input-model)、[候補の接続](../02-external-design/external-design.ja.md#input-candidate)。入力で指定する規約名 `su2_left_current_v1` は、この章全体を指す。使用箇所：[模型入力](#detail-model)、[候補入力](#detail-candidate)。
 
 <a name="conventions-model"></a>
 
@@ -35,17 +35,17 @@ Python、MCP、付属エージェントは同じJSON互換データを計算ラ�
 
 時空は、固定したLorentz計量を持つ可縮な開領域とする。座標を $`x^\pm=t\pm x`$、微分を $`\partial_\pm=\partial/\partial x^\pm=(\partial_t\pm\partial_x)/2`$ と定義する。変分する場は滑らかな群値場 $`g(x^+,x^-)\in SU(2)`$ のみであり、変分はコンパクトな台を持つ。境界条件と時空計量の変分による拘束条件は課さない。
 
-Lie代数の基底は $`T_a=-i\sigma_a/2`$ とする。ここで $`i^2=-1`$、 $`\sigma_a`$ はPauli行列、 $`a=1,2,3`$ である。規格化は $`[T_a,T_b]=\epsilon_{ab}{}^cT_c`$、 $`\epsilon_{12}{}^3=1`$、 $`\operatorname{tr}(T_aT_b)=-\delta_{ab}/2`$ とする。`trace_fundamental` はこの2次元表現の通常の行列トレースを表す。
+Lie代数の基底は $`T_a=-i\sigma_a/2`$ とする。ここで $`i^2=-1`$、 $`\sigma_a`$ はPauli行列、 $`a=1,2,3`$ である。規格化は $`[T_a,T_b]=\epsilon_{ab}{}^cT_c`$、 $`\epsilon_{12}{}^3=1`$、 $`\mathrm{tr}(T_aT_b)=-\delta_{ab}/2`$ とする。`trace_fundamental` はこの2次元表現の通常の行列トレースを表す。
 
 左不変カレントと作用を次のように定める。結合定数 $`\kappa`$ は正の実定数とし、時空座標に依存しない。
 
 $$
 j_\pm=g^{-1}\partial_\pm g=j_\pm^aT_a,
 \qquad
-S[g]=-\frac{1}{2\kappa^2}\int dx^+dx^-\,\operatorname{tr}(j_+j_-).
+S[g]=-\frac{1}{2\kappa^2}\int dx^+dx^-\,\mathrm{tr}(j_+j_-).
 $$
 
-作用から方程式を導く際は、 $`\delta g=g\varepsilon`$ と置き、 $`\delta j_\pm=\partial_\pm\varepsilon+[j_\pm,\varepsilon]`$ を代入する。トレースの巡回性と部分積分により、 $`\delta S=(2\kappa^2)^{-1}\int dx^+dx^-\operatorname{tr}(\varepsilon\mathcal E)`$ を得る。運動方程式とMaurer–Cartan恒等式を、それぞれ次の左辺で記録する。
+作用から方程式を導く際は、 $`\delta g=g\varepsilon`$ と置き、 $`\delta j_\pm=\partial_\pm\varepsilon+[j_\pm,\varepsilon]`$ を代入する。トレースの巡回性と部分積分により、 $`\delta S=(2\kappa^2)^{-1}\int dx^+dx^-\mathrm{tr}(\varepsilon\mathcal E)`$ を得る。運動方程式とMaurer–Cartan恒等式を、それぞれ次の左辺で記録する。
 
 $$
 \mathcal E=\partial_+j_-+\partial_-j_+=0,
@@ -59,7 +59,7 @@ $$
 
 ### 2.2 接続・スペクトルパラメータ・ゲージ変換
 
-対応する上位項目：[非自明性の検証条件](requirements.ja.md#handoff-essential)、[F-11](requirements.ja.md#req-f-11)。参照元：[数学的規約](#detail-conventions)、[候補のゲージ条件](#candidate-gauge)。
+対応する上位項目：[非自明性の検証条件](../01-requirements/requirements.ja.md#handoff-essential)、[F-11](../01-requirements/requirements.ja.md#req-f-11)。参照元：[数学的規約](#detail-conventions)、[候補のゲージ条件](#candidate-gauge)。
 
 スペクトルパラメータ $`z`$ は複素数で、時空座標、場、結合定数から独立とする。許容領域 $`Z`$ は[候補入力の多項式](#candidate-spectrum)で指定する。接続 $`\mathcal L_\pm(z)`$ は $`\mathfrak{sl}_2(\mathbb C)`$ に値を取り、補助線形問題と曲率の符号を次のように固定する。
 
@@ -83,7 +83,7 @@ $$
 
 ## 3. 模型入力
 
-対応する上位項目：[F-01](requirements.ja.md#req-f-01)、[模型](external-design.ja.md#input-model)、[模型と計算条件の登録](external-design.ja.md#operation-register)。参照元：[対象範囲](#detail-scope)、[模型の入力処理](#function-model)。
+対応する上位項目：[F-01](../01-requirements/requirements.ja.md#req-f-01)、[模型](../02-external-design/external-design.ja.md#input-model)、[模型と計算条件の登録](../02-external-design/external-design.ja.md#operation-register)。参照元：[対象範囲](#detail-scope)、[模型の入力処理](#function-model)。
 
 全項目を必須とし、省略時の既定値は設けない。この版で受理する模型は[第2.1節](#conventions-model)の作用である。模型名を選ぶ補助機能も、以下の完全なデータへ展開して利用者に返し、保存する。
 
@@ -124,7 +124,7 @@ $$
 
 ## 4. 候補入力
 
-対応する上位項目：[F-02](requirements.ja.md#req-f-02)、[保存する入力](requirements.ja.md#data-input)、[候補の接続](external-design.ja.md#input-candidate)。参照元：[対象範囲](#detail-scope)、[候補の入力処理](#function-candidate)。
+対応する上位項目：[F-02](../01-requirements/requirements.ja.md#req-f-02)、[保存する入力](../01-requirements/requirements.ja.md#data-input)、[候補の接続](../02-external-design/external-design.ja.md#input-candidate)。参照元：[対象範囲](#detail-scope)、[候補の入力処理](#function-candidate)。
 
 この版で受理する接続は、カレントに線形で、係数が $`z`$ の有理関数であるものとする。各成分を、下式の4個の $`3\times3`$ 行列 $`A_{\mu\nu}(z)`$ で表す。 $`\mu,\nu`$ は時空の `plus`, `minus` に対応する。
 
@@ -177,7 +177,7 @@ $$
 
 ## 5. 数式の読み取りと正規化
 
-対応する上位項目：[保存する入力](requirements.ja.md#data-input)、[F-09](requirements.ja.md#req-f-09)。参照元：[対象範囲](#detail-scope)、[入力検査](#detail-validation)。
+対応する上位項目：[保存する入力](../01-requirements/requirements.ja.md#data-input)、[F-09](../01-requirements/requirements.ja.md#req-f-09)。参照元：[対象範囲](#detail-scope)、[入力検査](#detail-validation)。
 
 数式は文字列で受け取り、整数、括弧、単項の `+ -`、二項の `+ - * /`、整数乗 `**` だけを認める。整数リテラルは10進の数字列とし、指数は符号付き整数リテラルに限る。`^`、小数、関数呼出し、属性参照、添字、暗黙の乗算は受理しない。整数以外の厳密な数は `1/2`、`-3/5` のように書く。
 
@@ -201,7 +201,7 @@ $$
 
 ## 6. 入力検査の手順と結果
 
-対応する上位項目：[F-01](requirements.ja.md#req-f-01)、[F-02](requirements.ja.md#req-f-02)、[N-01](requirements.ja.md#req-n-01)、[入力と計算の記録](external-design.ja.md#design-inputs)。参照元：[対象範囲](#detail-scope)、[模型の入力処理](#function-model)、[候補の入力処理](#function-candidate)。
+対応する上位項目：[F-01](../01-requirements/requirements.ja.md#req-f-01)、[F-02](../01-requirements/requirements.ja.md#req-f-02)、[N-01](../01-requirements/requirements.ja.md#req-n-01)、[入力と計算の記録](../02-external-design/external-design.ja.md#design-inputs)。参照元：[対象範囲](#detail-scope)、[模型の入力処理](#function-model)、[候補の入力処理](#function-candidate)。
 
 次の順に検査し、最初の失敗で戻る。同じ段階では[模型入力](#detail-model)・[候補入力](#detail-candidate)の表の順に項目を調べ、配列は先頭から、行列は行・列の順に調べる。全オブジェクトで未知のキーを拒否する。JSON文字列の重複キーは辞書へ変換する前に接続層で拒否する。
 
@@ -220,7 +220,7 @@ $$
 
 ### 6.1 戻り値と保存への引渡し
 
-対応する上位項目：[F-08](requirements.ja.md#req-f-08)、[保存する入力](requirements.ja.md#data-input)。参照元：[入力検査](#detail-validation)、[模型の入力処理](#function-model)、[候補の入力処理](#function-candidate)。
+対応する上位項目：[F-08](../01-requirements/requirements.ja.md#req-f-08)、[保存する入力](../01-requirements/requirements.ja.md#data-input)。参照元：[入力検査](#detail-validation)、[模型の入力処理](#function-model)、[候補の入力処理](#function-candidate)。
 
 戻り値は `status`, `value`, `error` の3項目とする。受理時は `status: "accepted"`、`value` に正規化した入力、`error: null` を返す。拒否時は `status: "rejected"`、`value: null` とし、`error` に文字列の `code`, `path`, `message` を返す。`path` はJSONのルートを空文字列、下位項目を `/` 区切り、配列添字を0始まりで示す。キー中の `~`, `/` はそれぞれ `~0`, `~1` と表す。
 
@@ -245,7 +245,7 @@ $$
 
 ## 7. 確認例
 
-対応する上位項目：[既知のLax接続](requirements.ja.md#accept-known-lax)、[運動方程式を表さない候補](requirements.ja.md#accept-missing-equations)、[除去可能なスペクトル依存](requirements.ja.md#accept-removable-parameter)、[保存した結果の再検算](requirements.ja.md#accept-recheck)。参照元：[対象範囲](#detail-scope)。
+対応する上位項目：[既知のLax接続](../01-requirements/requirements.ja.md#accept-known-lax)、[運動方程式を表さない候補](../01-requirements/requirements.ja.md#accept-missing-equations)、[除去可能なスペクトル依存](../01-requirements/requirements.ja.md#accept-removable-parameter)、[保存した結果の再検算](../01-requirements/requirements.ja.md#accept-recheck)。参照元：[対象範囲](#detail-scope)。
 
 以下は実装時に確認する期待結果である。本書の入力検査と、後続の物理検証の結果を分けて示す。
 
@@ -269,7 +269,7 @@ $$
 
 $`\mathcal M=0`$ の下で全ての $`z\in Z`$ に対する零曲率から $`\mathcal E=0`$ を回収する。 $`z=0`$ だけでは回収できないことも確認する。この式の確認に加え、非自明性の根拠を検証器で確認することが最初の受入れに必要である。
 
-見かけ上の依存を付ける例には $`h(z)=\operatorname{diag}(z,z^{-1})`$、 $`Z=\mathbb C\setminus\{0\}`$ を使う。両成分で $`\mathcal L_\pm=h j_\pm h^{-1}`$ とし、 $`A_{++}=A_{--}`$ を以下の行列、混合する2行列を零とする。
+見かけ上の依存を付ける例には $`h(z)=\mathrm{diag}(z,z^{-1})`$、 $`Z=\mathbb C\setminus\{0\}`$ を使う。両成分で $`\mathcal L_\pm=h j_\pm h^{-1}`$ とし、 $`A_{++}=A_{--}`$ を以下の行列、混合する2行列を零とする。
 
 $$
 A_{++}=A_{--}=\begin{pmatrix}
@@ -285,7 +285,7 @@ $$
 
 ## 8. 後続設計への引継ぎ
 
-対応する上位項目：[後続設計](external-design.ja.md#design-next)、[対応模型の拡大](requirements.ja.md#handoff-models)、[非自明性の検証条件](requirements.ja.md#handoff-essential)。参照元：[対象範囲](#detail-scope)、[模型入力](#detail-model)。
+対応する上位項目：[後続設計](../02-external-design/external-design.ja.md#design-next)、[対応模型の拡大](../01-requirements/requirements.ja.md#handoff-models)、[非自明性の検証条件](../01-requirements/requirements.ja.md#handoff-essential)。参照元：[対象範囲](#detail-scope)、[模型入力](#detail-model)。
 
 次の文書では、この入力から零曲率・運動方程式全体の回収・非自明性を検査する手順、返す根拠と未判定の条件を定める。特に非自明性については、本書の局所ゲージ変換の範囲を覆う証明方法が必要である。有限の形の変換を探索して見つからなかったことを、成立の根拠にはしない。
 
