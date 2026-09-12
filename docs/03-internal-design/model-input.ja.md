@@ -1,12 +1,14 @@
 # 内部設計書：模型とLax候補の入力
 
-対象：nlsm-lax-agent。更新日：2026年9月12日。状態：確認用の草案。以下の型と関数は実装予定の仕様であり、本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：入力についての既存案。以下の型と関数は暫定仕様であり、本体は未実装。
 
 本書では、最初の受入対象であるSU(2)主カイラル模型について、入力データ、数式の規約、入力検査と正規化を定める。[外部設計書](../02-external-design/external-design.ja.md)を具体化する内部設計の一部である。
 
 <a name="detail-scope"></a>
 
 ## 1. 対象と処理の境界
+
+[開発順序と移行条件](../01-requirements/requirements.ja.md#req-development)に従い、本書の入力形式は初期版の外部設計に合わせて見直す。利用者が数式で与える模型を計算用の表現へ渡す方法は未確定であり、ここに記載したJSON形式を利用者への必須入力形式として確定したものではない。
 
 対応する上位項目：[最初の受入範囲](../01-requirements/requirements.ja.md#req-initial-acceptance)、[後続設計](../02-external-design/external-design.ja.md#design-next)、[文書の順序](../../README.md#documentation)。
 

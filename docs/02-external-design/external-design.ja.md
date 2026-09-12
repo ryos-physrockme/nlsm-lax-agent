@@ -1,6 +1,6 @@
 # 外部設計書：利用方法と操作
 
-対象：nlsm-lax-agent。更新日：2026年9月12日。状態：確認用の草案。本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：既存の設計案。ヒアリング後の要件に照らして初期版の範囲を具体化する。本体は未実装。
 
 本書は、2次元非線形シグマ模型のLax接続を探索・検証するソフトウェアについて、利用者が行う操作と、その入力・出力の全体像を定める。[要件定義書](../01-requirements/requirements.ja.md)を上位文書とし、各節と操作から対応する要件へリンクする。要件側にも、対応する設計へのリンクを付ける。[文書一覧と参照の方針](../../README.md#documentation)に従う。
 
@@ -38,7 +38,7 @@
 | --- | --- | --- | --- |
 | <a name="input-model"></a>[模型](#input-model) | 作用、場、時空座標、結合定数、適用領域、仮定、境界条件、使用する恒等式 | すべての物理計算 | [F-01](../01-requirements/requirements.ja.md#req-f-01)、[保存する情報：入力](../01-requirements/requirements.ja.md#data-input)、[伝達事項：対応模型の拡大](../01-requirements/requirements.ja.md#handoff-models)、[入力の数学的規約](../03-internal-design/model-input.ja.md#detail-conventions)、[模型入力の詳細](../03-internal-design/model-input.ja.md#detail-model) |
 | <a name="input-candidate"></a>[候補の接続](#input-candidate) | 接続の成分、値が属するLie代数、スペクトルパラメータとその領域、補助線形問題のゲージ群、許容する局所ゲージ変換の条件 | 候補の検証 | [F-02](../01-requirements/requirements.ja.md#req-f-02)、[F-11](../01-requirements/requirements.ja.md#req-f-11)、[保存する情報：入力](../01-requirements/requirements.ja.md#data-input)、[入力の数学的規約](../03-internal-design/model-input.ja.md#detail-conventions)、[候補入力の詳細](../03-internal-design/model-input.ja.md#detail-candidate) |
-| <a name="input-search"></a>[探索条件](#input-search) | 候補に許す項や関数、未知係数、次数などの範囲、探索方法、結合定数を変える場合はその範囲 | 記号計算・機械学習による探索 | [F-05](../01-requirements/requirements.ja.md#req-f-05)、[F-06](../01-requirements/requirements.ja.md#req-f-06)、[F-12](../01-requirements/requirements.ja.md#req-f-12) |
+| <a name="input-search"></a>[探索条件](#input-search) | 研究目的、守る制約、結合定数を変える場合はその範囲。具体的な項・関数形・未知係数・次数は、利用者が指定するかエージェントに提案を依頼する | 記号計算・機械学習による探索 | [F-05](../01-requirements/requirements.ja.md#req-f-05)、[F-06](../01-requirements/requirements.ja.md#req-f-06)、[F-12](../01-requirements/requirements.ja.md#req-f-12) |
 | <a name="input-execution"></a>[実行条件](#input-execution) | 時間・メモリの上限、保存先、機械学習を使う場合の学習・乱数設定、付属エージェントを使う場合の言語モデル設定と利用上限 | 実行の開始と再開 | [N-03](../01-requirements/requirements.ja.md#req-n-03)、[保存する情報：使用資源と費用](../01-requirements/requirements.ja.md#data-resources)、[伝達事項：実行上限の測定](../01-requirements/requirements.ja.md#handoff-budgets) |
 
 スペクトルパラメータは、時空に依存せず、場や模型の結合定数から独立した補助パラメータである。その依存を除去できないことを、許容する局所ゲージ変換の範囲を明示して検査する。
@@ -102,7 +102,7 @@
 
 外部エージェントで探索する場合の流れは、次のとおりとする。
 
-1. 研究者が模型、許す探索範囲、資源上限を決める。外部エージェントが利用可能なツールを確認し、模型と計算条件を登録する。
+1. 研究者が模型、目的、守る制約、資源上限を示す。外部エージェントが利用可能なツールを確認し、模型と計算条件を登録する。具体的なansatzの次数や関数形は、エージェントに提案を依頼できる。
 2. 模型の運動方程式を取得し、候補の検証または探索を依頼する。
 3. 検証結果と根拠を読み、必要に応じて候補や探索条件を変更して次の計算を依頼する。
 4. 目的の結果を得たとき、探索範囲を調べ終えたとき、または上限に達したときに終了し、結果と終了理由を取得する。
@@ -131,6 +131,6 @@ Pythonで使う研究者も、必要な操作を選んで同じ流れを実行�
 
 対応する上位項目：[8.2 開発全体の受入れ](../01-requirements/requirements.ja.md#req-full-acceptance)、[8.3 研究成果の確認](../01-requirements/requirements.ja.md#req-research)、[9. 外部設計への伝達事項](../01-requirements/requirements.ja.md#req-handoff)、[N-06](../01-requirements/requirements.ja.md#req-n-06)、[C-02](../01-requirements/requirements.ja.md#req-c-02)、[R-01](../01-requirements/requirements.ja.md#req-r-01)、[R-02](../01-requirements/requirements.ja.md#req-r-02)、[伝達事項：動作環境と配布](../01-requirements/requirements.ja.md#handoff-distribution)、[伝達事項：研究評価](../01-requirements/requirements.ja.md#handoff-evaluation)。
 
-現在は[第2章](#design-inputs)の「模型と候補の入力」について、SU(2)主カイラル模型を用いた[内部設計の対象と処理](../03-internal-design/model-input.ja.md#detail-scope)を確認する段階である。作用・場・微分・恒等式・候補の表現、入力の型と検査手順、許容する局所ゲージ変換の条件を定める。その次は、同書の[後続設計への引継ぎ](../03-internal-design/model-input.ja.md#detail-handoff)に従って3検査の処理と根拠を具体化する。
+[開発順序と移行条件](../01-requirements/requirements.ja.md#req-development)に従い、PCMの候補提案・計算・検証・再試行・報告を一続きに動かす範囲を具体化する。追加する設計対象は[ansatzの提案](../01-requirements/requirements.ja.md#req-f-14)、[探索失敗後の情報](../01-requirements/requirements.ja.md#req-f-15)、後続の[変形模型の提案](../01-requirements/requirements.ja.md#req-f-16)である。[エージェントの初期受入条件](../01-requirements/requirements.ja.md#accept-agent-loop)に対応する入力・出力と失敗時の例を先にそろえる。数式の入力と内部の計算表現の受け渡しを明記し、[入力の既存案](../03-internal-design/model-input.ja.md#detail-scope)を見直す。3検査については、同書の[後続設計への引継ぎ](../03-internal-design/model-input.ja.md#detail-handoff)に従って処理と根拠を具体化する。
 
-以後は、操作ごとの入出力、実行管理と資源上限、配布・接続手順、研究評価の順に進める。[要件定義書第9章](../01-requirements/requirements.ja.md#req-handoff)の伝達事項は、対応する設計で具体化し、要件番号と確認例を添える。最初の動作確認の範囲は、[要件定義書第8.1節](../01-requirements/requirements.ja.md#req-initial-acceptance)に従う。
+初期版に必要な入出力、実行管理、接続、判定手順を確認した範囲から実装する。後続の対応模型、探索方法、配布と研究評価は段階的に具体化する。[要件定義書第9章](../01-requirements/requirements.ja.md#req-handoff)の伝達事項は、対応する設計で具体化し、要件番号と確認例を添える。最初の動作確認の範囲は、[要件定義書第8.1節](../01-requirements/requirements.ja.md#req-initial-acceptance)に従う。
