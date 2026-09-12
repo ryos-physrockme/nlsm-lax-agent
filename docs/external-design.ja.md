@@ -1,10 +1,10 @@
 # 外部設計書：利用方法と操作
 
-対象：nlsm-lax-agent。更新日：2026年9月11日。状態：確認用の草案。本体は未実装。
+対象：nlsm-lax-agent。更新日：2026年9月12日。状態：確認用の草案。本体は未実装。
 
 本書は、2次元非線形シグマ模型のLax接続を探索・検証するソフトウェアについて、利用者が行う操作と、その入力・出力の全体像を定める。[要件定義書](requirements.ja.md)を上位文書とし、各節と操作から対応する要件へリンクする。要件側にも、対応する設計へのリンクを付ける。[文書一覧と参照の方針](../README.md#documentation)に従う。
 
-外部設計の最初の確認対象は、この利用方法と操作である。個々の数式の入力形式、対応模型の数理的な条件、資源上限の計測方法、配布手順は、この全体像を確認してから順に具体化する。
+本書は利用方法と操作の全体像を示す。個々の数式の入力形式、対応模型の数理的な条件、資源上限の計測方法、配布手順は、この全体像に対応付けて順に具体化する。
 
 <a name="design-usage"></a>
 
@@ -28,14 +28,16 @@
 
 ## 2. 入力と計算の記録
 
+入力の詳細設計：[入力検査の手順](model-input.ja.md#detail-validation)。
+
 対応する上位項目：[5. データ要件](requirements.ja.md#req-data)、[F-08](requirements.ja.md#req-f-08)、[N-03](requirements.ja.md#req-n-03)。
 
 利用者は、模型と計算条件を登録してから、候補の検証や探索を依頼する。登録時に発行する実行番号は、一連の計算の入力、履歴、資源上限をまとめて参照する識別子である。候補を1つ検証するだけの場合も、この単位で記録する。
 
-| 入力 | 指定する内容 | 使用する場面 | 対応する上位項目 |
+| 入力 | 指定する内容 | 使用する場面 | 対応する要件・詳細設計 |
 | --- | --- | --- | --- |
-| <a name="input-model"></a>[模型](#input-model) | 作用、場、時空座標、結合定数、適用領域、仮定、境界条件、使用する恒等式 | すべての物理計算 | [F-01](requirements.ja.md#req-f-01)、[保存する情報：入力](requirements.ja.md#data-input)、[伝達事項：対応模型の拡大](requirements.ja.md#handoff-models) |
-| <a name="input-candidate"></a>[候補の接続](#input-candidate) | 接続の成分、値が属するLie代数、スペクトルパラメータとその領域、補助線形問題のゲージ群、許容する局所ゲージ変換の条件 | 候補の検証 | [F-02](requirements.ja.md#req-f-02)、[F-11](requirements.ja.md#req-f-11)、[保存する情報：入力](requirements.ja.md#data-input) |
+| <a name="input-model"></a>[模型](#input-model) | 作用、場、時空座標、結合定数、適用領域、仮定、境界条件、使用する恒等式 | すべての物理計算 | [F-01](requirements.ja.md#req-f-01)、[保存する情報：入力](requirements.ja.md#data-input)、[伝達事項：対応模型の拡大](requirements.ja.md#handoff-models)、[入力の数学的規約](model-input.ja.md#detail-conventions)、[模型入力の詳細](model-input.ja.md#detail-model) |
+| <a name="input-candidate"></a>[候補の接続](#input-candidate) | 接続の成分、値が属するLie代数、スペクトルパラメータとその領域、補助線形問題のゲージ群、許容する局所ゲージ変換の条件 | 候補の検証 | [F-02](requirements.ja.md#req-f-02)、[F-11](requirements.ja.md#req-f-11)、[保存する情報：入力](requirements.ja.md#data-input)、[入力の数学的規約](model-input.ja.md#detail-conventions)、[候補入力の詳細](model-input.ja.md#detail-candidate) |
 | <a name="input-search"></a>[探索条件](#input-search) | 候補に許す項や関数、未知係数、次数などの範囲、探索方法、結合定数を変える場合はその範囲 | 記号計算・機械学習による探索 | [F-05](requirements.ja.md#req-f-05)、[F-06](requirements.ja.md#req-f-06)、[F-12](requirements.ja.md#req-f-12) |
 | <a name="input-execution"></a>[実行条件](#input-execution) | 時間・メモリの上限、保存先、機械学習を使う場合の学習・乱数設定、付属エージェントを使う場合の言語モデル設定と利用上限 | 実行の開始と再開 | [N-03](requirements.ja.md#req-n-03)、[保存する情報：使用資源と費用](requirements.ja.md#data-resources)、[伝達事項：実行上限の測定](requirements.ja.md#handoff-budgets) |
 
@@ -53,10 +55,10 @@
 
 以下は公開する操作と入出力の概要である。各操作はPythonとMCPから個別に呼び出せ、付属エージェントも同じ操作を使う。プログラム上の関数名と引数の形式は、入出力の設計で定める。
 
-| 操作 | 入力 | 受け取るもの | 対応する上位項目 |
+| 操作 | 入力 | 受け取るもの | 対応する要件・詳細設計 |
 | --- | --- | --- | --- |
 | <a name="operation-tools"></a>[利用できるツールを調べる](#operation-tools) | 必要に応じて計算の目的や対象模型 | ツール名、説明、入出力、適用条件、追加ソフトウェアの要否、利用可否 | [N-04](requirements.ja.md#req-n-04)、[N-05](requirements.ja.md#req-n-05) |
-| <a name="operation-register"></a>[模型と計算条件を登録する](#operation-register) | 模型、実行条件 | 実行番号、保存した入力、入力の不足や未対応箇所 | [F-01](requirements.ja.md#req-f-01)、[F-08](requirements.ja.md#req-f-08) |
+| <a name="operation-register"></a>[模型と計算条件を登録する](#operation-register) | 模型、実行条件 | 実行番号、保存した入力、入力の不足や未対応箇所 | [F-01](requirements.ja.md#req-f-01)、[F-08](requirements.ja.md#req-f-08)、[模型入力の詳細](model-input.ja.md#detail-model) |
 | <a name="operation-equations"></a>[運動方程式を導出する](#operation-equations) | 実行番号と入力の版 | 運動方程式全体、使用する恒等式、導出に用いた条件 | [F-01](requirements.ja.md#req-f-01) |
 | <a name="operation-verify"></a>[候補を検証する](#operation-verify) | 実行番号、対象模型の版、候補の接続 | [第4章](#design-verification)の3検査の結果、成立条件、根拠、未解決の計算 | [F-02](requirements.ja.md#req-f-02)、[F-03](requirements.ja.md#req-f-03)、[F-04](requirements.ja.md#req-f-04)、[F-11](requirements.ja.md#req-f-11)、[保存する情報：検証結果](requirements.ja.md#data-verification) |
 | <a name="operation-symbolic"></a>[記号計算で候補を探す](#operation-symbolic) | 実行番号、探索条件 | 得られた候補、検証結果、探索した範囲、終了理由 | [F-05](requirements.ja.md#req-f-05) |
@@ -129,6 +131,6 @@ Pythonで使う研究者も、必要な操作を選んで同じ流れを実行�
 
 対応する上位項目：[8.2 開発全体の受入れ](requirements.ja.md#req-full-acceptance)、[8.3 研究成果の確認](requirements.ja.md#req-research)、[9. 外部設計への伝達事項](requirements.ja.md#req-handoff)、[N-06](requirements.ja.md#req-n-06)、[C-02](requirements.ja.md#req-c-02)、[R-01](requirements.ja.md#req-r-01)、[R-02](requirements.ja.md#req-r-02)、[伝達事項：動作環境と配布](requirements.ja.md#handoff-distribution)、[伝達事項：研究評価](requirements.ja.md#handoff-evaluation)。
 
-本書の確認後は、まず[第2章](#design-inputs)の「模型と候補の入力」を具体化する。SU(2)主カイラル模型を使い、作用・場・微分・恒等式・候補の接続をどのように指定し、何を入力の不足や未対応として返すかを定める。非自明性の検査に必要なゲージ群と局所ゲージ変換の条件も、この模型の定義に含める。
+現在は[第2章](#design-inputs)の「模型と候補の入力」について、SU(2)主カイラル模型を用いた[詳細設計の対象と処理](model-input.ja.md#detail-scope)を確認する段階である。作用・場・微分・恒等式・候補の表現、入力の型と検査手順、許容する局所ゲージ変換の条件を定める。その次は、同書の[後続設計への引継ぎ](model-input.ja.md#detail-handoff)に従って3検査の処理と根拠を具体化する。
 
 以後は、操作ごとの入出力、実行管理と資源上限、配布・接続手順、研究評価の順に進める。[要件定義書第9章](requirements.ja.md#req-handoff)の伝達事項は、対応する設計で具体化し、要件番号と確認例を添える。最初の動作確認の範囲は、[要件定義書第8.1節](requirements.ja.md#req-initial-acceptance)に従う。
